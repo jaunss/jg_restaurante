@@ -1,6 +1,8 @@
 <nav class="navbar navbar-expand-lg">
 	<div class="container-fluid">
-		<a class="navbar-brand" href="#"><img class="id_jg_restaurante"
+		<a class="navbar-brand"
+			href="${pageContext.request.contextPath}/Home?acao=home"><img
+			class="id_jg_restaurante"
 			src="${pageContext.request.contextPath}/assets/images/jg_restaurante.png"></a>
 		<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
 			data-bs-target="#navbarNav" aria-controls="navbarNav"

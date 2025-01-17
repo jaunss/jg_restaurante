@@ -33,11 +33,11 @@ public class ClienteServlet extends HttpServlet {
 			cliente = new Cliente();
 			clienteService = new ClienteService();
 
-			if (acao.equalsIgnoreCase("inicio")) {
-				redirecionarParaPagina(request, response, "/index.jsp", null, null);
+			if (acao.equalsIgnoreCase("cadastrarCliente")) {
+				redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null);
 			} else if (acao.equalsIgnoreCase("listarCliente")) {
 				request.setAttribute("clientes", clienteService.buscarTodosClientes());
-				redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp", null, null);
+				redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp", null);
 			} else if (acao.equalsIgnoreCase("editarCliente")) {
 				Integer codigo = request.getParameter("codigo") != null && !request.getParameter("codigo").isEmpty()
 						? Integer.parseInt(request.getParameter("codigo"))
@@ -47,11 +47,11 @@ public class ClienteServlet extends HttpServlet {
 
 				if (cliente != null && cliente.getCodigo() != null) {
 					request.setAttribute("cliente", cliente);
-					redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null, null);
+					redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null);
 				} else {
 					request.setAttribute("clientes", clienteService.buscarTodosClientes());
 					redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
-							"Cliente não encontrado!", null);
+							"Cliente não encontrado!");
 				}
 			} else if (acao.equalsIgnoreCase("removerCliente")) {
 				Integer codigo = request.getParameter("codigo") != null && !request.getParameter("codigo").isEmpty()
@@ -65,15 +65,24 @@ public class ClienteServlet extends HttpServlet {
 
 					request.setAttribute("clientes", clienteService.buscarTodosClientes());
 					redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
-							"Cliente removido com sucesso!", "sucesso");
+							"Cliente removido com sucesso!");
 				} else {
 					request.setAttribute("clientes", clienteService.buscarTodosClientes());
 					redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
-							"Não foi possível remover o cliente!", "falha");
+							"Não foi possível remover o cliente!");
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			Integer codigoStatus = (Integer) request.getAttribute("javax.servlet.error.status_code");
+			String mensagem = (String) request.getAttribute("javax.servlet.error.message");
+			Throwable exception = (Throwable) request.getAttribute("javax.servlet.error.exception");
+
+			request.setAttribute("codigoStatus", codigoStatus);
+			request.setAttribute("mensagem", mensagem);
+			request.setAttribute("exception", exception);
+
+			RequestDispatcher requestDispatcher = request.getRequestDispatcher("/error.jsp");
+			requestDispatcher.forward(request, response);
 		}
 	}
 
@@ -100,37 +109,31 @@ public class ClienteServlet extends HttpServlet {
 
 				request.setAttribute("clientes", clienteService.buscarTodosClientes());
 				redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
-						"Cliente atualizado com sucesso!", "sucesso");
+						"Cliente atualizado com sucesso!");
 			} else {
 				clienteService.adicionarCliente(cliente);
 
 				redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp",
-						"Cliente adicionado com sucesso!", "sucesso");
+						"Cliente adicionado com sucesso!");
 			}
 		} catch (Exception e) {
 			Integer codigoStatus = (Integer) request.getAttribute("javax.servlet.error.status_code");
 			String mensagem = (String) request.getAttribute("javax.servlet.error.message");
 			Throwable exception = (Throwable) request.getAttribute("javax.servlet.error.exception");
 
-			// Adicionar atributos para a página JSP
 			request.setAttribute("codigoStatus", codigoStatus);
 			request.setAttribute("mensagem", mensagem);
 			request.setAttribute("exception", exception);
 
-			// Redirecionar para a página de erro
 			RequestDispatcher requestDispatcher = request.getRequestDispatcher("/error.jsp");
 			requestDispatcher.forward(request, response);
 		}
 	}
 
 	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina,
-			String mensagem, String tipoMensagem) throws ServletException, IOException {
+			String mensagem) throws ServletException, IOException {
 		if (mensagem != null) {
 			request.setAttribute("mensagem", mensagem);
-		}
-
-		if (tipoMensagem != null) {
-			request.setAttribute("tipoMensagem", tipoMensagem);
 		}
 
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher(pagina);

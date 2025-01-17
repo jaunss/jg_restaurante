@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cliente</title>
+<title>Lanche</title>
 
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/assets/css/bootstrap-5.3.0.min.css">
@@ -24,32 +24,32 @@
 		</c:if>
 
 		<a class="btn btn-success btn-sm" style="height: 37px"
-			href="${pageContext.request.contextPath}/Cliente?acao=cadastrarCliente"
-			title="Cadastrar Cliente"><i class="bi bi-pencil-square"></i>
-			Cadastrar Cliente</a>
+			href="${pageContext.request.contextPath}/Lanche?acao=cadastrarLanche"
+			title="Cadastrar Lanche"><i class="bi bi-pencil-square"></i>
+			Cadastrar Lanche</a>
 
 		<div class="table-responsive mt-4">
 			<table class="table table-striped table-bordered">
 				<thead style="background-color: #fd7e14; color: white;">
 					<tr>
 						<th>Nome</th>
-						<th>Email</th>
-						<th>Telefone</th>
+						<th>Descrição do Lanche</th>
+						<th>Preço</th>
 						<th>Ações</th>
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="cliente" items="${clientes}">
+					<c:forEach var="lanche" items="${lanches}">
 						<tr>
-							<td>${cliente.nome}</td>
-							<td>${cliente.email}</td>
-							<td>${cliente.telefone}</td>
+							<td>${lanche.nome}</td>
+							<td>${lanche.descricao_conteudo}</td>
+							<td>${lanche.preco}</td>
 							<td><a class="btn btn-primary btn-sm"
-								href="${pageContext.request.contextPath}/Cliente?acao=editarCliente&codigo=${cliente.codigo}"
-								title="Editar Cliente"><i class="bi bi-pencil-square"></i></a> <a
+								href="${pageContext.request.contextPath}/Lanche?acao=editarLanche&codigo=${lanche.codigo}"
+								title="Editar Lanche"><i class="bi bi-pencil-square"></i></a> <a
 								class="btn btn-danger btn-sm"
-								href="${pageContext.request.contextPath}/Cliente?acao=removerCliente&codigo=${cliente.codigo}"
-								title="Remover Cliente"><i class="bi bi-trash"></i></a></td>
+								href="${pageContext.request.contextPath}/Lanche?acao=removerLanche&codigo=${lanche.codigo}"
+								title="Remover Lanche"><i class="bi bi-trash"></i></a></td>
 						</tr>
 					</c:forEach>
 				</tbody>

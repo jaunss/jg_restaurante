@@ -23,7 +23,7 @@ public class LancheService {
 		return new LancheDAO().buscarTodosLanches();
 	}
 
-	public Lanche buscarLanchePorCodigo(Lanche lanche) {
-		return new LancheDAO().buscarLanchePorCodigo(lanche);
+	public Lanche buscarLanchePorCodigo(Integer codigo) {
+		return new LancheDAO().buscarLanchePorCodigo(codigo);
 	}
 }
