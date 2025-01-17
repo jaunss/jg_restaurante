@@ -1,0 +1,66 @@
+/* Garantir que o html e body ocupem toda a altura da tela */
+html, body {
+	height: 100%;
+	margin: 0;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+}
+
+main {
+	flex: 1; /* Faz o conteúdo principal ocupar o espaço disponível */
+}
+
+/* Cor de fundo do Navbar */
+.navbar {
+	background-color: #198754; /* Verde */
+}
+
+/* Cor das opções de menu */
+.nav-link {
+	color: #ffffff !important; /* Branco */
+}
+
+/* Cor das opções de menu ao passar o mouse */
+.nav-link:hover {
+	background-color: #fd7e14; /* Laranja */
+	border-radius: 5px;
+}
+
+/* Estilo do link ativo */
+.nav-link.active {
+	background-color: #fd7e14; /* Laranja */
+	border-radius: 5px;
+}
+
+.id_jg_restaurante {
+	filter: brightness(0) invert(1);
+	width: 100px;
+	height: auto;
+	max-height: 100px;
+}
+
+/* Estilo das cards (blocos de lanche) */
+.card {
+	border-radius: 10px;
+	border: none;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo das imagens nas cards */
+.card-img-top {
+	border-radius: 10px 10px 0 0;
+}
+
+/* Título das cards */
+.card-title {
+	font-weight: bold;
+	color: #333;
+}
+
+/* Texto das cards */
+.card-text {
+	color: #555;
+}
