@@ -27,7 +27,8 @@ public class PedidoDAO {
 	public void adicionarPedido(Pedido pedido) {
 		try {
 			sb = new StringBuilder();
-			sb.append("INSERT INTO pedido (data_pedido, cliente_id, subtotal, total) VALUES (?, ?, ?, ?)");
+			sb.append(
+					"INSERT INTO pedido (data_pedido, cliente_id, subtotal, total, observacao) VALUES (?, ?, ?, ?, ?)");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
@@ -40,6 +41,7 @@ public class PedidoDAO {
 			ps.setInt(2, pedido.getCliente().getCodigo());
 			ps.setBigDecimal(3, pedido.getSubTotal().setScale(2, RoundingMode.HALF_UP));
 			ps.setBigDecimal(4, pedido.getTotal().setScale(2, RoundingMode.HALF_UP));
+			ps.setString(5, pedido.getObservacao());
 
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -53,7 +55,8 @@ public class PedidoDAO {
 	public void atualizarPedidoPorCodigo(Pedido pedido) {
 		try {
 			sb = new StringBuilder();
-			sb.append("UPDATE pedido SET data_pedido = ?, cliente_id = ?, subtotal = ?, total = ? WHERE codigo = ?");
+			sb.append(
+					"UPDATE pedido SET data_pedido = ?, cliente_id = ?, subtotal = ?, total = ?, observacao = ? WHERE codigo = ?");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
@@ -66,7 +69,8 @@ public class PedidoDAO {
 			ps.setInt(2, pedido.getCliente().getCodigo());
 			ps.setBigDecimal(3, pedido.getSubTotal().setScale(2, RoundingMode.HALF_UP));
 			ps.setBigDecimal(4, pedido.getTotal().setScale(2, RoundingMode.HALF_UP));
-			ps.setInt(5, pedido.getCodigo());
+			ps.setString(5, pedido.getObservacao());
+			ps.setInt(6, pedido.getCodigo());
 
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -116,6 +120,7 @@ public class PedidoDAO {
 				pedido.getCliente().setCodigo(rs.getInt("CLIENTE_ID"));
 				pedido.setSubTotal(rs.getBigDecimal("SUBTOTAL"));
 				pedido.setTotal(rs.getBigDecimal("TOTAL"));
+				pedido.setObservacao(rs.getString("OBSERVACAO"));
 
 				pedidos.add(pedido);
 			}
@@ -149,6 +154,7 @@ public class PedidoDAO {
 				pedido.getCliente().setCodigo(rs.getInt("CLIENTE_ID"));
 				pedido.setSubTotal(rs.getBigDecimal("SUBTOTAL"));
 				pedido.setTotal(rs.getBigDecimal("TOTAL"));
+				pedido.setObservacao(rs.getString("OBSERVACAO"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

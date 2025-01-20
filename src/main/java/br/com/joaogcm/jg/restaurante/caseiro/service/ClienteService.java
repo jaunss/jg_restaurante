@@ -23,7 +23,7 @@ public class ClienteService {
 		return new ClienteDAO().buscarTodosClientes();
 	}
 
-	public Cliente buscarClientePorCodigo(Integer codigo) {
-		return new ClienteDAO().buscarClientePorCodigo(codigo);
+	public Cliente buscarClientePorCodigo(Cliente cliente) {
+		return new ClienteDAO().buscarClientePorCodigo(cliente);
 	}
 }

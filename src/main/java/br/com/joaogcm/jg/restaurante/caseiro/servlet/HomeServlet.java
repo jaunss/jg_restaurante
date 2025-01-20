@@ -21,20 +21,38 @@ public class HomeServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String acao = request.getParameter("acao");
+
+		// Usado para deixar o item do submenu selecionado quando clicado
 		request.setAttribute("acao", acao);
 
-		if (acao.equalsIgnoreCase("home")) {
-			redirecionarParaPagina(request, response, "/index.jsp");
+		try {
+			if (acao.equalsIgnoreCase("home")) {
+				redirecionarParaPagina(request, response, "/index.jsp", "Erro ao processar a solicitação!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação da home!");
 		}
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		try {
 
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação da home!");
+		}
 	}
 
-	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina)
-			throws ServletException, IOException {
+	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina,
+			String mensagem) throws ServletException, IOException {
+		if (mensagem != null) {
+			request.setAttribute("mensagem", mensagem);
+		}
+
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher(pagina);
 		requestDispatcher.forward(request, response);
 	}

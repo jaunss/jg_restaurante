@@ -12,6 +12,7 @@ public class Pedido {
 	private Cliente cliente;
 	private BigDecimal subTotal;
 	private BigDecimal total;
+	private String observacao;
 	private Set<Lanche> lanches = new HashSet<Lanche>();
 
 	public Pedido() {
@@ -56,6 +57,14 @@ public class Pedido {
 
 	public void setTotal(BigDecimal total) {
 		this.total = total;
+	}
+
+	public String getObservacao() {
+		return observacao;
+	}
+
+	public void setObservacao(String observacao) {
+		this.observacao = observacao;
 	}
 
 	public Set<Lanche> getLanches() {

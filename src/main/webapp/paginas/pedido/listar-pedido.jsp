@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cliente</title>
+<title>Pedido</title>
 
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/assets/css/bootstrap-5.3.0.min.css">
@@ -24,32 +24,34 @@
 		</c:if>
 
 		<a class="btn btn-success btn-sm" style="height: 37px"
-			href="${pageContext.request.contextPath}/Cliente?acao=cadastrarCliente"
-			title="Cadastrar Cliente"><i class="bi bi-pencil-square"></i>
-			Cadastrar Cliente</a>
+			href="${pageContext.request.contextPath}/Pedido?acao=cadastrarPedido"
+			title="Cadastrar Pedido"><i class="bi bi-pencil-square"></i>
+			Cadastrar Pedido</a>
 
 		<div class="table-responsive mt-4">
 			<table class="table table-striped table-bordered">
 				<thead style="background-color: #fd7e14; color: white;">
 					<tr>
-						<th>Nome</th>
-						<th>Email</th>
-						<th>Telefone</th>
+						<th>Data do Pedido</th>
+						<th>Nome do Cliente</th>
+						<th>Sub Total</th>
+						<th>Total</th>
 						<th>Ações</th>
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="cliente" items="${clientes}">
+					<c:forEach var="pedido" items="${pedidos}">
 						<tr>
-							<td>${cliente.nome}</td>
-							<td>${cliente.email}</td>
-							<td>${cliente.telefone}</td>
+							<td>${pedido.dataPedido}</td>
+							<td>${pedido.cliente.nome}</td>
+							<td>${pedido.subtotal}</td>
+							<td>${pedido.total}</td>
 							<td><a class="btn btn-primary btn-sm"
-								href="${pageContext.request.contextPath}/Cliente?acao=editarCliente&codigo=${cliente.codigo}"
-								title="Editar Cliente"><i class="bi bi-pencil-square"></i></a> <a
+								href="${pageContext.request.contextPath}/Pedido?acao=editarPedido&codigo=${pedido.codigo}"
+								title="Editar Pedido"><i class="bi bi-pencil-square"></i></a> <a
 								class="btn btn-danger btn-sm"
-								href="${pageContext.request.contextPath}/Cliente?acao=removerCliente&codigo=${cliente.codigo}"
-								title="Remover Cliente"><i class="bi bi-trash"></i></a></td>
+								href="${pageContext.request.contextPath}/Pedido?acao=removerPedido&codigo=${pedido.codigo}"
+								title="Remover Pedido"><i class="bi bi-trash"></i></a></td>
 						</tr>
 					</c:forEach>
 				</tbody>
@@ -58,8 +60,5 @@
 	</main>
 
 	<jsp:include page="/paginas/template/footer/footer.jsp" />
-
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

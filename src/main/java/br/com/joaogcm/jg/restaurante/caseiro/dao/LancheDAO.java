@@ -118,17 +118,15 @@ public class LancheDAO {
 		return lanches;
 	}
 
-	public Lanche buscarLanchePorCodigo(Integer codigo) {
-		Lanche lanche = null;
-		
+	public Lanche buscarLanchePorCodigo(Lanche lanche) {
 		try {
 			sb = new StringBuilder();
 			sb.append("SELECT * FROM lanche WHERE codigo = ?");
-			
+
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
 			ps = conn.prepareStatement(sb.toString());
-			ps.setInt(1, codigo);
+			ps.setInt(1, lanche.getCodigo());
 
 			rs = ps.executeQuery();
 

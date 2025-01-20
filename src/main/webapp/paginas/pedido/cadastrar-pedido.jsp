@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pedido</title>
-<!-- Link do Bootstrap 5 -->
+
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/assets/css/bootstrap-5.3.0.min.css">
 <link rel="stylesheet"
@@ -16,42 +16,8 @@
 	href="<%=request.getContextPath()%>/assets/css/style.css">
 </head>
 <body>
-	<!-- Barra de navegação -->
-	<nav class="navbar navbar-expand-lg">
-		<div class="container-fluid">
-			<a class="navbar-brand" href="#"><img class="id_jg_restaurante"
-				src="<%=request.getContextPath()%>/assets/images/jg_restaurante.png"></a>
-			<button class="navbar-toggler" type="button"
-				data-bs-toggle="collapse" data-bs-target="#navbarNav"
-				aria-controls="navbarNav" aria-expanded="false"
-				aria-label="Alternar navegação">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-			<div class="collapse navbar-collapse" id="navbarNav">
-				<ul class="navbar-nav ms-auto">
-					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/index.jsp">Início</a></li>
-					<li class="nav-item"><a class="nav-link active"
-						href="${pageContext.request.contextPath}/Pedido?acao=listarPedido"><i
-							class="bi bi-bag"></i> Pedido</a></li>
-					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/Lanche?acao=listarLanche"><i
-							class="bi bi-egg-fried"></i> Lanche</a></li>
-					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/Cliente?acao=listarCliente"><i
-							class="bi bi-people"></i> Cliente</a></li>
-					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/Carrinho?acao=listarCarrinho"><i
-							class="bi bi-cart"></i> Carrinho</a></li>
-					<li class="nav-item"><a class="nav-link"
-						href="${pageContext.request.contextPath}/Autenticacao?acao=autenticar"><i
-							class="bi bi-box-arrow-in-right"></i> Login</a></li>
-				</ul>
-			</div>
-		</div>
-	</nav>
+	<jsp:include page="/paginas/template/navbar/navbar.jsp" />
 
-	<!-- Conteúdo principal -->
 	<main class="container mt-5">
 		<c:if test="${mensagem != null}">
 			<div
@@ -59,56 +25,63 @@
 				role="alert">${mensagem}</div>
 		</c:if>
 		<form class="row g-3 mt-4">
-			<!-- Nome -->
+			<input type="hidden" id="codigo" name="codigo"
+				value="${pedido.codigo}">
+
 			<div class="col-md-6">
-				<label for="nome" class="form-label">Seu Nome</label> <input
-					type="text" class="form-control" id="nome"
-					placeholder="Digite seu nome" required>
+				<label for="dataPedido" class="form-label">Data do Pedido</label> <input
+					id="dataPedido" type="date" name="dataPedido"
+					value="${pedido.dataPedido}" class="form-control"
+					placeholder="Data do Pedido" readonly="readonly">
 			</div>
 
-			<!-- Telefone -->
 			<div class="col-md-6">
-				<label for="telefone" class="form-label">Telefone</label> <input
-					type="tel" class="form-control" id="telefone"
-					placeholder="(99) 99999-9999" required>
+				<label for="nomeCliente" class="form-label">Nome do Cliente</label>
+				<input id="nomeCliente" type="text" name="cliente.nome"
+					value="${pedido.cliente.nome}" class="form-control"
+					placeholder="Nome do Cliente" required>
 			</div>
 
-			<!-- Escolha do Lanche -->
 			<div class="col-md-6">
 				<label for="lanche" class="form-label">Escolha seu Lanche</label> <select
 					class="form-select" id="lanche" required>
 					<option selected disabled>Selecione...</option>
-					<option value="classico">Lanche Clássico</option>
-					<option value="vegano">Lanche Vegano</option>
-					<option value="premium">Lanche Premium</option>
+					<c:forEach var="lanche" items="lanches">
+						<option value="${lanche.codigo}">${lanche.nome}</option>
+					</c:forEach>
 				</select>
 			</div>
 
-			<!-- Quantidade -->
 			<div class="col-md-3">
-				<label for="quantidade" class="form-label">Quantidade</label> <input
-					type="number" class="form-control" id="quantidade" min="1"
-					value="1" required>
+				<label for="subtotal" class="form-label">SubTotal</label> <input
+					id="subtotal" type="text" name="subtotal"
+					value="${pedido.subtotal}" class="form-control"
+					placeholder="Sub Total" required>
 			</div>
 
-			<!-- Observações -->
+			<div class="col-md-3">
+				<label for="total" class="form-label">Total</label> <input
+					id="total" type="text" name="total" value="${pedido.total}"
+					class="form-control" placeholder="Total" required>
+			</div>
+
 			<div class="col-12">
-				<label for="observacoes" class="form-label">Observações</label>
-				<textarea class="form-control" id="observacoes" rows="3"
-					placeholder="Alguma observação sobre o pedido?"></textarea>
+				<label for="observacao" class="form-label">Observação</label>
+				<textarea id="observacao" name="observacao" class="form-control"
+					rows="5" placeholder="Alguma observação sobre o pedido?">${pedido.observacao}</textarea>
 			</div>
 
-			<!-- Botões -->
 			<div class="col-12 text-end">
 				<button type="reset" class="btn btn-secondary">Limpar</button>
-				<button type="submit" class="btn btn-success">Fazer Pedido</button>
+				<button type="submit" class="btn btn-success">Salvar Pedido</button>
+				<a class="btn btn-success btn-sm" style="height: 37px"
+					href="${pageContext.request.contextPath}/Pedido?acao=listarPedido"
+					title="Voltar"><i class="bi bi-pencil-square"></i> Voltar</a>
 			</div>
 		</form>
 	</main>
 
-	<footer class="p-3 bg-success text-white text-center py-3">
-		<p>&copy; 2025 - JG Restaurante. Todos os direitos reservados.</p>
-	</footer>
+	<jsp:include page="/paginas/template/footer/footer.jsp" />
 
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

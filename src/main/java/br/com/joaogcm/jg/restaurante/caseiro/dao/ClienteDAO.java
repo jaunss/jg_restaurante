@@ -119,9 +119,7 @@ public class ClienteDAO {
 		return clientes;
 	}
 
-	public Cliente buscarClientePorCodigo(Integer codigo) {
-		Cliente cliente = null;
-
+	public Cliente buscarClientePorCodigo(Cliente cliente) {
 		try {
 			sb = new StringBuilder();
 			sb.append("SELECT * FROM cliente WHERE codigo = ?");
@@ -129,7 +127,7 @@ public class ClienteDAO {
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
 			ps = conn.prepareStatement(sb.toString());
-			ps.setInt(1, codigo);
+			ps.setInt(1, cliente.getCodigo());
 
 			rs = ps.executeQuery();
 

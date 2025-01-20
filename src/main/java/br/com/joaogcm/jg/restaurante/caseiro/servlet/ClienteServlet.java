@@ -27,25 +27,28 @@ public class ClienteServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String acao = request.getParameter("acao");
+
+		// Usado para deixar o item do submenu selecionado quando clicado
 		request.setAttribute("acao", acao);
 
 		try {
 			cliente = new Cliente();
 			clienteService = new ClienteService();
 
-			if (acao.equalsIgnoreCase("cadastrarCliente")) {
-				redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null);
-			} else if (acao.equalsIgnoreCase("listarCliente")) {
+			if (acao.equalsIgnoreCase("listarCliente")) {
 				request.setAttribute("clientes", clienteService.buscarTodosClientes());
 				redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp", null);
+			} else if (acao.equalsIgnoreCase("cadastrarCliente")) {
+				redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null);
 			} else if (acao.equalsIgnoreCase("editarCliente")) {
-				Integer codigo = request.getParameter("codigo") != null && !request.getParameter("codigo").isEmpty()
-						? Integer.parseInt(request.getParameter("codigo"))
-						: null;
+				String codigo = request.getParameter("codigo");
+				Integer codigoC = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
 
-				cliente = clienteService.buscarClientePorCodigo(codigo);
+				cliente.setCodigo(codigoC);
 
-				if (cliente != null && cliente.getCodigo() != null) {
+				cliente = clienteService.buscarClientePorCodigo(cliente);
+
+				if (cliente.getCodigo() != null) {
 					request.setAttribute("cliente", cliente);
 					redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null);
 				} else {
@@ -54,13 +57,14 @@ public class ClienteServlet extends HttpServlet {
 							"Cliente não encontrado!");
 				}
 			} else if (acao.equalsIgnoreCase("removerCliente")) {
-				Integer codigo = request.getParameter("codigo") != null && !request.getParameter("codigo").isEmpty()
-						? Integer.parseInt(request.getParameter("codigo"))
-						: null;
+				String codigo = request.getParameter("codigo");
+				Integer codigoC = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
 
-				cliente = clienteService.buscarClientePorCodigo(codigo);
+				cliente.setCodigo(codigoC);
 
-				if (cliente != null && cliente.getCodigo() != null) {
+				cliente = clienteService.buscarClientePorCodigo(cliente);
+
+				if (cliente.getCodigo() != null) {
 					clienteService.removerClientePorCodigo(cliente);
 
 					request.setAttribute("clientes", clienteService.buscarTodosClientes());
@@ -73,16 +77,9 @@ public class ClienteServlet extends HttpServlet {
 				}
 			}
 		} catch (Exception e) {
-			Integer codigoStatus = (Integer) request.getAttribute("javax.servlet.error.status_code");
-			String mensagem = (String) request.getAttribute("javax.servlet.error.message");
-			Throwable exception = (Throwable) request.getAttribute("javax.servlet.error.exception");
+			e.printStackTrace();
 
-			request.setAttribute("codigoStatus", codigoStatus);
-			request.setAttribute("mensagem", mensagem);
-			request.setAttribute("exception", exception);
-
-			RequestDispatcher requestDispatcher = request.getRequestDispatcher("/error.jsp");
-			requestDispatcher.forward(request, response);
+			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do cliente!");
 		}
 	}
 
@@ -104,7 +101,7 @@ public class ClienteServlet extends HttpServlet {
 			cliente.setTelefone(telefone != null && !telefone.isEmpty() ? telefone : null);
 			cliente.setCpf(cpf != null && !cpf.isEmpty() ? cpf : null);
 
-			if (cliente != null && cliente.getCodigo() != null) {
+			if (cliente.getCodigo() != null) {
 				clienteService.atualizarClientePorCodigo(cliente);
 
 				request.setAttribute("clientes", clienteService.buscarTodosClientes());
@@ -117,16 +114,9 @@ public class ClienteServlet extends HttpServlet {
 						"Cliente adicionado com sucesso!");
 			}
 		} catch (Exception e) {
-			Integer codigoStatus = (Integer) request.getAttribute("javax.servlet.error.status_code");
-			String mensagem = (String) request.getAttribute("javax.servlet.error.message");
-			Throwable exception = (Throwable) request.getAttribute("javax.servlet.error.exception");
+			e.printStackTrace();
 
-			request.setAttribute("codigoStatus", codigoStatus);
-			request.setAttribute("mensagem", mensagem);
-			request.setAttribute("exception", exception);
-
-			RequestDispatcher requestDispatcher = request.getRequestDispatcher("/error.jsp");
-			requestDispatcher.forward(request, response);
+			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do cliente!");
 		}
 	}
 
