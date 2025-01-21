@@ -34,7 +34,7 @@
 					<tr>
 						<th>Nome</th>
 						<th>Descrição do Lanche</th>
-						<th>Preço</th>
+						<th>Preço em R$</th>
 						<th>Ações</th>
 					</tr>
 				</thead>

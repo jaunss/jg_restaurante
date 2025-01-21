@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
 import br.com.joaogcm.jg.restaurante.caseiro.service.ClienteService;
 
@@ -94,12 +96,16 @@ public class ClienteServlet extends HttpServlet {
 			String email = request.getParameter("email");
 			String telefone = request.getParameter("telefone");
 			String cpf = request.getParameter("cpf");
+			String senha = request.getParameter("senha");
 
 			cliente.setCodigo(codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null);
 			cliente.setNome(nome != null && !nome.isEmpty() ? nome : null);
 			cliente.setEmail(email != null && !email.isEmpty() ? email : null);
 			cliente.setTelefone(telefone != null && !telefone.isEmpty() ? telefone : null);
 			cliente.setCpf(cpf != null && !cpf.isEmpty() ? cpf : null);
+			cliente.setSenha(senha != null && !senha.isEmpty() ? senha : null);
+
+			gerarSenhaHash(cliente.getSenha());
 
 			if (cliente.getCodigo() != null) {
 				clienteService.atualizarClientePorCodigo(cliente);
@@ -111,7 +117,7 @@ public class ClienteServlet extends HttpServlet {
 				clienteService.adicionarCliente(cliente);
 
 				redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp",
-						"Cliente adicionado com sucesso!");
+						"Cliente cadastrado com sucesso!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -128,5 +134,9 @@ public class ClienteServlet extends HttpServlet {
 
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher(pagina);
 		requestDispatcher.forward(request, response);
+	}
+
+	public String gerarSenhaHash(String senha) {
+		return BCrypt.hashpw(senha, BCrypt.gensalt());
 	}
 }

@@ -10,7 +10,6 @@ public class Pedido {
 	private Integer codigo;
 	private LocalDateTime dataPedido;
 	private Cliente cliente;
-	private BigDecimal subTotal;
 	private BigDecimal total;
 	private String observacao;
 	private Set<Lanche> lanches = new HashSet<Lanche>();
@@ -41,14 +40,6 @@ public class Pedido {
 
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
-	}
-
-	public BigDecimal getSubTotal() {
-		return subTotal;
-	}
-
-	public void setSubTotal(BigDecimal subTotal) {
-		this.subTotal = subTotal;
 	}
 
 	public BigDecimal getTotal() {

@@ -7,6 +7,7 @@ public class Cliente {
 	private String email;
 	private String telefone;
 	private String cpf;
+	private String senha;
 
 	public Cliente() {
 
@@ -50,5 +51,13 @@ public class Cliente {
 
 	public void setCpf(String cpf) {
 		this.cpf = cpf;
+	}
+
+	public String getSenha() {
+		return senha;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
 	}
 }

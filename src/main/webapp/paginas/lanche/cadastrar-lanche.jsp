@@ -23,27 +23,30 @@
 			<div class="alert">${mensagem}</div>
 		</c:if>
 
-		<form class="row g-3 mt-4">
+		<form action="${pageContext.request.contextPath}/Lanche" method="post"
+			class="row g-3 mt-4">
 			<input id="codigoL" type="hidden" name="codigo"
 				value="${lanche.codigo}">
 
 			<div class="col-md-6">
 				<label for="nomeL" class="form-label">Nome do Lanche</label> <input
 					id="nomeL" type="text" name="nome" value="${lanche.nome}"
-					class="form-control" placeholder="Digite seu nome" required>
+					class="form-control" placeholder="Digite o nome do lanche"
+					required="required">
 			</div>
 
 			<div class="col-md-6">
 				<label for="descricaoL" class="form-label">Descrição do
 					Lanche</label> <input id="descricaoL" type="tel" name="descricao_conteudo"
 					value="${lanche.descricao_conteudo}" class="form-control"
-					placeholder="(99) 99999-9999" required>
+					placeholder="Digite a descrição do Lanche" required="required">
 			</div>
 
 			<div class="col-md-6">
 				<label for="precoL" class="form-label">Preço do Lanche</label> <input
 					id="precoL" type="tel" name="preco" value="${lanche.preco}"
-					class="form-control" placeholder="Preço do Lanche" required>
+					class="form-control" placeholder="Digite o preço do Lanche"
+					required="required">
 			</div>
 
 			<div class="col-12 text-end">

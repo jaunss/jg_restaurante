@@ -109,22 +109,14 @@ public class PedidoServlet extends HttpServlet {
 
 			String codigo = request.getParameter("codigo");
 			String dataPedido = request.getParameter("dataPedido");
-			String subTotal = request.getParameter("subTotal");
 			String total = request.getParameter("total");
 
 			/* Obtém os códigos dos lanches selecionados */
 			String[] codigoLanches = request.getParameterValues("lanches");
 
 			pedido.setCodigo(codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null);
-			pedido.setDataPedido(dataPedido != null && !dataPedido.isEmpty() ? LocalDateTime.parse(dataPedido) : null);
-
-			Pedido newPedido = pedidoService.buscarPedidoPorCodigo(pedido);
-
-			if (newPedido != null) {
-				pedido.setCliente(newPedido.getCliente() != null ? newPedido.getCliente() : null);
-			}
-
-			pedido.setSubTotal(subTotal != null && !subTotal.isEmpty() ? new BigDecimal(subTotal) : null);
+			pedido.setDataPedido(dataPedido != null && !dataPedido.isEmpty() ? LocalDateTime.parse(dataPedido)
+					: LocalDateTime.now());
 			pedido.setTotal(total != null && !total.isEmpty() ? new BigDecimal(total) : null);
 
 			if (codigoLanches != null) {
@@ -150,6 +142,12 @@ public class PedidoServlet extends HttpServlet {
 			}
 
 			if (pedido.getCodigo() != null) {
+				Pedido newPedido = pedidoService.buscarPedidoPorCodigo(pedido);
+
+				if (newPedido != null) {
+					pedido.setCliente(newPedido.getCliente() != null ? newPedido.getCliente() : null);
+				}
+
 				pedidoService.atualizarPedidoPorCodigo(pedido);
 
 				/*

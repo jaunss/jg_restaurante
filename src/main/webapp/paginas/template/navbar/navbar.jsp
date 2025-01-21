@@ -34,7 +34,7 @@
 						class="bi bi-cart"></i> Carrinho</a></li>
 				<li class="nav-item"><a
 					class="nav-link ${acao == 'autenticar' ? 'active' : ''}"
-					href="${pageContext.request.contextPath}/Autenticacao?acao=autenticar"><i
+					href="${pageContext.request.contextPath}/Autenticacao?acao=autenticarLogin"><i
 						class="bi bi-box-arrow-in-right"></i> Login</a></li>
 			</ul>
 		</div>

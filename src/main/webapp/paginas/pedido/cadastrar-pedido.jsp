@@ -24,29 +24,24 @@
 				class="alert ${tipoMensagem == 'sucesso' ? 'alert-success' : tipoMensagem == 'falha' ? 'alert-danger' : ''}"
 				role="alert">${mensagem}</div>
 		</c:if>
-		<form class="row g-3 mt-4">
+
+		<form action="${pageContext.request.contextPath}/Pedido" method="post"
+			class="row g-3 mt-4">
 			<input type="hidden" id="codigo" name="codigo"
 				value="${pedido.codigo}">
-
-			<div class="col-md-6">
-				<label for="dataPedido" class="form-label">Data do Pedido</label> <input
-					id="dataPedido" type="date" name="dataPedido"
-					value="${pedido.dataPedido}" class="form-control"
-					placeholder="Data do Pedido" readonly="readonly">
-			</div>
 
 			<div class="col-md-6">
 				<label for="nomeCliente" class="form-label">Nome do Cliente</label>
 				<input id="nomeCliente" type="text" name="cliente.nome"
 					value="${pedido.cliente.nome}" class="form-control"
-					placeholder="Nome do Cliente" required>
+					placeholder="Nome do Cliente" readonly="readonly">
 			</div>
 
 			<div class="col-md-6">
 				<label for="lanche" class="form-label">Escolha seu Lanche</label> <select
 					class="form-select" id="lanche" name="lanches" multiple="multiple"
-					required>
-					<option selected disabled>Selecione...</option>
+					required="required">
+					<option selected="selected">Selecione...</option>
 					<c:forEach var="lanche" items="${lanches}">
 						<option value="${lanche.codigo}">${lanche.nome}</option>
 					</c:forEach>
@@ -54,16 +49,9 @@
 			</div>
 
 			<div class="col-md-3">
-				<label for="subtotal" class="form-label">SubTotal</label> <input
-					id="subtotal" type="text" name="subtotal"
-					value="${pedido.subtotal}" class="form-control"
-					placeholder="Sub Total" required>
-			</div>
-
-			<div class="col-md-3">
 				<label for="total" class="form-label">Total</label> <input
 					id="total" type="text" name="total" value="${pedido.total}"
-					class="form-control" placeholder="Total" required>
+					class="form-control" placeholder="Total" readonly="readonly">
 			</div>
 
 			<div class="col-12">

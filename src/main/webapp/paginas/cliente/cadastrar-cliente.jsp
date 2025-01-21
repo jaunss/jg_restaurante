@@ -31,27 +31,36 @@
 			<div class="col-md-6">
 				<label for="nomeC" class="form-label">Nome do Cliente</label> <input
 					id="nomeC" type="text" name="nome" value="${cliente.nome}"
-					class="form-control" placeholder="Digite seu nome" required>
+					class="form-control" placeholder="Digite seu nome"
+					required="required">
 			</div>
 
 			<div class="col-md-6">
 				<label for="emailC" class="form-label">Email do Cliente</label> <input
 					id="emailC" type="email" name="email" value="${cliente.email}"
-					class="form-control" placeholder="exemplo@exemplo.com" required>
+					class="form-control" placeholder="exemplo@exemplo.com"
+					required="required">
 			</div>
 
 			<div class="col-md-6">
 				<label for="telefoneC" class="form-label">Telefone do
 					Cliente</label> <input id="telefoneC" type="tel" name="telefone"
 					value="${cliente.telefone}" class="form-control"
-					placeholder="(99) 99999-9999" required>
+					placeholder="(99) 99999-9999" required="required">
 			</div>
 
 			<div class="col-md-6">
 				<label for="cpfC" class="form-label">CPF do Cliente</label> <input
 					id="cpfC" type="text" name="cpf" value="${cliente.cpf}"
 					class="form-control"
-					placeholder="000.000.000-00 (Digitar somente os números)" required>
+					placeholder="000.000.000-00 (Digitar somente os números)"
+					required="required">
+			</div>
+
+			<div class="col-md-6">
+				<label for="senhaC" class="form-label">Senha do Cliente</label> <input
+					id="senhaC" type="password" name="senha" value="${cliente.senha}"
+					class="form-control" placeholder="********" required="required">
 			</div>
 
 			<div class="col-12 text-end">

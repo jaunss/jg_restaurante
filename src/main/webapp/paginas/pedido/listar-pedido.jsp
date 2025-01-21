@@ -26,7 +26,7 @@
 		<a class="btn btn-success btn-sm" style="height: 37px"
 			href="${pageContext.request.contextPath}/Pedido?acao=cadastrarPedido"
 			title="Cadastrar Pedido"><i class="bi bi-pencil-square"></i>
-			Cadastrar Pedido</a>
+			Fazer Pedido</a>
 
 		<div class="table-responsive mt-4">
 			<table class="table table-striped table-bordered">
@@ -34,8 +34,8 @@
 					<tr>
 						<th>Data do Pedido</th>
 						<th>Nome do Cliente</th>
-						<th>Sub Total</th>
-						<th>Total</th>
+						<th>Total em R$</th>
+						<th>Observação</th>
 						<th>Ações</th>
 					</tr>
 				</thead>
@@ -44,8 +44,8 @@
 						<tr>
 							<td>${pedido.dataPedido}</td>
 							<td>${pedido.cliente.nome}</td>
-							<td>${pedido.subtotal}</td>
 							<td>${pedido.total}</td>
+							<td>${pedido.observacao}</td>
 							<td><a class="btn btn-primary btn-sm"
 								href="${pageContext.request.contextPath}/Pedido?acao=editarPedido&codigo=${pedido.codigo}"
 								title="Editar Pedido"><i class="bi bi-pencil-square"></i></a> <a
