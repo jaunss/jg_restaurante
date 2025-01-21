@@ -20,9 +20,9 @@ public class PedidoLancheServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private Pedido pedido = null;
-	private PedidoService pedidoService = null;
-
 	private Lanche lanche = null;
+
+	private PedidoService pedidoService = null;
 	private LancheService lancheService = null;
 
 	public PedidoLancheServlet() {
@@ -33,14 +33,14 @@ public class PedidoLancheServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String acao = request.getParameter("acao");
 
-		// Usado para deixar o item do submenu selecionado quando clicado
+		/* Usado para deixar o item do submenu selecionado quando clicado */
 		request.setAttribute("acao", acao);
 
 		try {
 			pedido = new Pedido();
-			pedidoService = new PedidoService();
-
 			lanche = new Lanche();
+
+			pedidoService = new PedidoService();
 			lancheService = new LancheService();
 
 		} catch (Exception e) {
@@ -55,9 +55,9 @@ public class PedidoLancheServlet extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			pedido = new Pedido();
-			pedidoService = new PedidoService();
-
 			lanche = new Lanche();
+
+			pedidoService = new PedidoService();
 			lancheService = new LancheService();
 
 		} catch (Exception e) {

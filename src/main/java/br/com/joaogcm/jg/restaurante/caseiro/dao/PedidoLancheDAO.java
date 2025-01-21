@@ -22,6 +22,40 @@ public class PedidoLancheDAO {
 
 	}
 
+	public void adicionarPedidoLanche(Pedido pedido, Lanche lanche) {
+		try {
+			sb = new StringBuilder();
+			sb.append("INSERT INTO pedido_lanche (codigo_pedido, codigo_lanche) VALUES (?, ?)");
+
+			conn = new ConfiguraConexaoBancoDeDados().getConexao();
+
+			ps = conn.prepareStatement(sb.toString());
+			ps.setInt(1, pedido.getCodigo());
+			ps.setInt(2, lanche.getCodigo());
+
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void removerPedidoLanchePorCodigoDoPedido(Pedido pedido) {
+		try {
+			sb = new StringBuilder();
+			sb.append("DELETE FROM pedido_lanche WHERE codigo_pedido = ?");
+
+			conn = new ConfiguraConexaoBancoDeDados().getConexao();
+
+			ps = conn.prepareStatement(sb.toString());
+			ps.setInt(1, pedido.getCodigo());
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public Set<Lanche> buscarTodosOsLanchesDeUmDeterminadoPedido(Pedido pedido) {
 		Set<Lanche> lanches = new HashSet<Lanche>();
 

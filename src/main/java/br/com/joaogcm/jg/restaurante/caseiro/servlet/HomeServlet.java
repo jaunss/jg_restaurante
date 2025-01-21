@@ -22,7 +22,7 @@ public class HomeServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String acao = request.getParameter("acao");
 
-		// Usado para deixar o item do submenu selecionado quando clicado
+		/* Usado para deixar o item do submenu selecionado quando clicado */
 		request.setAttribute("acao", acao);
 
 		try {

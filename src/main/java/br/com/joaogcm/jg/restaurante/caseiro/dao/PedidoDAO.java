@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import br.com.joaogcm.jg.restaurante.caseiro.configuration.connection.ConfiguraConexaoBancoDeDados;
+import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Pedido;
 
 public class PedidoDAO {
@@ -115,8 +116,12 @@ public class PedidoDAO {
 
 			while (rs.next()) {
 				Pedido pedido = new Pedido();
+				Cliente cliente = new Cliente();
+
 				pedido.setCodigo(rs.getInt("CODIGO"));
 				pedido.setDataPedido(rs.getTimestamp("data_pedido").toLocalDateTime());
+
+				pedido.setCliente(cliente);
 				pedido.getCliente().setCodigo(rs.getInt("CLIENTE_ID"));
 				pedido.setSubTotal(rs.getBigDecimal("SUBTOTAL"));
 				pedido.setTotal(rs.getBigDecimal("TOTAL"));
@@ -138,7 +143,7 @@ public class PedidoDAO {
 	public Pedido buscarPedidoPorCodigo(Pedido pedido) {
 		try {
 			sb = new StringBuilder();
-			sb.append("SELECT * FROM Pedido WHERE codigo = ?");
+			sb.append("SELECT * FROM pedido WHERE codigo = ?");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
@@ -149,8 +154,12 @@ public class PedidoDAO {
 
 			while (rs.next()) {
 				pedido = new Pedido();
+				Cliente cliente = new Cliente();
+
 				pedido.setCodigo(rs.getInt("CODIGO"));
 				pedido.setDataPedido(rs.getTimestamp("data_pedido").toLocalDateTime());
+
+				pedido.setCliente(cliente);
 				pedido.getCliente().setCodigo(rs.getInt("CLIENTE_ID"));
 				pedido.setSubTotal(rs.getBigDecimal("SUBTOTAL"));
 				pedido.setTotal(rs.getBigDecimal("TOTAL"));

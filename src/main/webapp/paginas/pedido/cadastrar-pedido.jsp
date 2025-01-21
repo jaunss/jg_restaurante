@@ -9,11 +9,11 @@
 <title>Pedido</title>
 
 <link rel="stylesheet"
-	href="<%=request.getContextPath()%>/assets/css/bootstrap-5.3.0.min.css">
+	href="${pageContext.request.contextPath}/assets/css/bootstrap-5.3.0.min.css">
 <link rel="stylesheet"
-	href="<%=request.getContextPath()%>/assets/css/bootstrap-icons.css">
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 <link rel="stylesheet"
-	href="<%=request.getContextPath()%>/assets/css/style.css">
+	href="${pageContext.request.contextPath}/assets/css/style.css">
 </head>
 <body>
 	<jsp:include page="/paginas/template/navbar/navbar.jsp" />
@@ -44,9 +44,10 @@
 
 			<div class="col-md-6">
 				<label for="lanche" class="form-label">Escolha seu Lanche</label> <select
-					class="form-select" id="lanche" required>
+					class="form-select" id="lanche" name="lanches" multiple="multiple"
+					required>
 					<option selected disabled>Selecione...</option>
-					<c:forEach var="lanche" items="lanches">
+					<c:forEach var="lanche" items="${lanches}">
 						<option value="${lanche.codigo}">${lanche.nome}</option>
 					</c:forEach>
 				</select>
