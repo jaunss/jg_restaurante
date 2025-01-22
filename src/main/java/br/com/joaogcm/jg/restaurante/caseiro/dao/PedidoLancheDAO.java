@@ -36,6 +36,9 @@ public class PedidoLancheDAO {
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			ConfiguraConexaoBancoDeDados.fecharConn(conn);
+			ConfiguraConexaoBancoDeDados.fecharPS(ps);
 		}
 	}
 
@@ -53,6 +56,9 @@ public class PedidoLancheDAO {
 
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			ConfiguraConexaoBancoDeDados.fecharConn(conn);
+			ConfiguraConexaoBancoDeDados.fecharPS(ps);
 		}
 	}
 

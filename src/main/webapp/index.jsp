@@ -19,6 +19,24 @@
 	<jsp:include page="/paginas/template/navbar/navbar.jsp" />
 
 	<main class="container mt-5">
+		<c:if test="${tipoMensagem != null && tipoMensagem == 'erro'}">
+			<c:if test="${mensagem != null}">
+				<div class="alert alert-danger" role="alert">${mensagem}</div>
+			</c:if>
+		</c:if>
+
+		<c:if test="${tipoMensagem != null && tipoMensagem == 'perigo'}">
+			<c:if test="${mensagem != null}">
+				<div class="alert alert-warning" role="alert">${mensagem}</div>
+			</c:if>
+		</c:if>
+
+		<c:if test="${tipoMensagem != null && tipoMensagem == 'sucesso'}">
+			<c:if test="${mensagem != null}">
+				<div class="alert alert-success" role="alert">${mensagem}</div>
+			</c:if>
+		</c:if>
+
 		<h1>Escolha o seu lanche!</h1>
 		<p>Confira algumas das nossas deliciosas opções de lanches abaixo.</p>
 

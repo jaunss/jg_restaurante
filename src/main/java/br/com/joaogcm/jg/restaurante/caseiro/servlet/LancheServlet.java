@@ -38,9 +38,9 @@ public class LancheServlet extends HttpServlet {
 
 			if (acao.equalsIgnoreCase("listarLanche")) {
 				request.setAttribute("lanches", lancheService.buscarTodosLanches());
-				redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp", null);
+				redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp", null, null);
 			} else if (acao.equalsIgnoreCase("cadastrarLanche")) {
-				redirecionarParaPagina(request, response, "/paginas/lanche/cadastrar-lanche.jsp", null);
+				redirecionarParaPagina(request, response, "/paginas/lanche/cadastrar-lanche.jsp", null, null);
 			} else if (acao.equalsIgnoreCase("editarLanche")) {
 				String codigo = request.getParameter("codigo");
 				Integer codigoL = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
@@ -51,11 +51,12 @@ public class LancheServlet extends HttpServlet {
 
 				if (lanche.getCodigo() != null) {
 					request.setAttribute("lanche", lanche);
-					redirecionarParaPagina(request, response, "/paginas/lanche/cadastrar-lanche.jsp", null);
+					redirecionarParaPagina(request, response, "/paginas/lanche/cadastrar-lanche.jsp", "Edite o lanche!",
+							"sucesso");
 				} else {
 					request.setAttribute("lanches", lancheService.buscarTodosLanches());
 					redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp",
-							"Lanche não encontrado!");
+							"Lanche não encontrado!", "perigo");
 				}
 
 			} else if (acao.equalsIgnoreCase("removerLanche")) {
@@ -71,17 +72,18 @@ public class LancheServlet extends HttpServlet {
 
 					request.setAttribute("lanches", lancheService.buscarTodosLanches());
 					redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp",
-							"Lanche removido com sucesso!");
+							"Lanche removido com sucesso!", "sucesso");
 				} else {
 					request.setAttribute("lanches", lancheService.buscarTodosLanches());
 					redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp",
-							"Não foi possível remover o lanche!");
+							"Não foi possível remover o lanche!", "perigo");
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do lanche!");
+			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do lanche!",
+					"erro");
 		}
 	}
 
@@ -107,26 +109,31 @@ public class LancheServlet extends HttpServlet {
 
 				request.setAttribute("lanches", lancheService.buscarTodosLanches());
 				redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp",
-						"Lanche atualizado com sucesso!");
+						"Lanche atualizado com sucesso!", "sucesso");
 			} else {
 				lancheService.adicionarLanche(lanche);
 
 				redirecionarParaPagina(request, response, "/paginas/lanche/cadastrar-lanche.jsp",
-						"Lanche adicionado com sucesso!");
+						"Lanche adicionado com sucesso!", "sucesso");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do lanche!");
+			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do lanche!",
+					"erro");
 		}
 
 	}
 
 	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina,
-			String mensagem) throws ServletException, IOException {
+			String mensagem, String tipoMensagem) throws ServletException, IOException {
 		if (mensagem != null) {
 			request.setAttribute("mensagem", mensagem);
+		}
+
+		if (tipoMensagem != null) {
+			request.setAttribute("tipoMensagem", tipoMensagem);
 		}
 
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher(pagina);

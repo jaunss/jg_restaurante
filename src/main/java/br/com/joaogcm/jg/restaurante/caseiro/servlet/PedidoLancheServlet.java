@@ -47,7 +47,7 @@ public class PedidoLancheServlet extends HttpServlet {
 			e.printStackTrace();
 
 			redirecionarParaPagina(request, response, "/error.jsp",
-					"Erro ao processar a solicitação do pedido e/ou lanche!");
+					"Erro ao processar a solicitação do pedido e/ou lanche!", "erro");
 		}
 	}
 
@@ -64,14 +64,18 @@ public class PedidoLancheServlet extends HttpServlet {
 			e.printStackTrace();
 
 			redirecionarParaPagina(request, response, "/error.jsp",
-					"Erro ao processar a solicitação do pedido e/ou lanche!");
+					"Erro ao processar a solicitação do pedido e/ou lanche!", "erro");
 		}
 	}
 
 	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina,
-			String mensagem) throws ServletException, IOException {
+			String mensagem, String tipoMensagem) throws ServletException, IOException {
 		if (mensagem != null) {
 			request.setAttribute("mensagem", mensagem);
+		}
+
+		if (tipoMensagem != null) {
+			request.setAttribute("tipoMensagem", tipoMensagem);
 		}
 
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher(pagina);

@@ -19,8 +19,22 @@
 	<jsp:include page="/paginas/template/navbar/navbar.jsp" />
 
 	<main class="container mt-5">
-		<c:if test="${mensagem != null}">
-			<div class="alert">${mensagem}</div>
+		<c:if test="${tipoMensagem != null && tipoMensagem == 'erro'}">
+			<c:if test="${mensagem != null}">
+				<div class="alert alert-danger" role="alert">${mensagem}</div>
+			</c:if>
+		</c:if>
+
+		<c:if test="${tipoMensagem != null && tipoMensagem == 'perigo'}">
+			<c:if test="${mensagem != null}">
+				<div class="alert alert-warning" role="alert">${mensagem}</div>
+			</c:if>
+		</c:if>
+
+		<c:if test="${tipoMensagem != null && tipoMensagem == 'sucesso'}">
+			<c:if test="${mensagem != null}">
+				<div class="alert alert-success" role="alert">${mensagem}</div>
+			</c:if>
 		</c:if>
 
 		<form action="${pageContext.request.contextPath}/Cliente"
@@ -71,7 +85,7 @@
 					<i class="bi bi-save"></i> Salvar Cliente
 				</button>
 				<a class="btn btn-success btn-sm" style="height: 37px"
-					href="${pageContext.request.contextPath}/Cliente?acao=listarCliente"
+					href="${pageContext.request.contextPath}/Autenticacao?acao=autenticarLogin"
 					title="Voltar"><i class="bi bi-pencil-square"></i> Voltar</a>
 			</div>
 		</form>

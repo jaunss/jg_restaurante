@@ -27,12 +27,12 @@ public class HomeServlet extends HttpServlet {
 
 		try {
 			if (acao.equalsIgnoreCase("home")) {
-				redirecionarParaPagina(request, response, "/index.jsp", "Erro ao processar a solicitação!");
+				redirecionarParaPagina(request, response, "/index.jsp", "Bem-vindo ao JG Restaurante :)", "sucesso");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação da home!");
+			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação da home!", "erro");
 		}
 	}
 
@@ -43,14 +43,18 @@ public class HomeServlet extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação da home!");
+			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação da home!", "erro");
 		}
 	}
 
 	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina,
-			String mensagem) throws ServletException, IOException {
+			String mensagem, String tipoMensagem) throws ServletException, IOException {
 		if (mensagem != null) {
 			request.setAttribute("mensagem", mensagem);
+		}
+
+		if (tipoMensagem != null) {
+			request.setAttribute("tipoMensagem", tipoMensagem);
 		}
 
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher(pagina);

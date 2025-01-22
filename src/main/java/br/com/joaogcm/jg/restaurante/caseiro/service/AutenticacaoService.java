@@ -8,7 +8,7 @@ public class AutenticacaoService {
 		return new AutenticacaoDAO().autenticarClientePorEmail(email);
 	}
 
-	public Cliente autenticarClientePorSenhaHash(Cliente cliente) {
-		return new AutenticacaoDAO().autenticarClientePorSenhaHash(cliente);
+	public Cliente autenticarClientePorEmailESenha(String email) {
+		return new AutenticacaoDAO().autenticarClientePorEmailESenha(email);
 	}
 }

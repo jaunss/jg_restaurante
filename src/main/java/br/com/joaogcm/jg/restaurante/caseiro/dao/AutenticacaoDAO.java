@@ -39,29 +39,40 @@ public class AutenticacaoDAO {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			ConfiguraConexaoBancoDeDados.fecharConn(conn);
+			ConfiguraConexaoBancoDeDados.fecharPS(ps);
+			ConfiguraConexaoBancoDeDados.fecharRS(rs);
 		}
 
 		return cliente;
 	}
 
-	public Cliente autenticarClientePorSenhaHash(Cliente cliente) {
+	public Cliente autenticarClientePorEmailESenha(String email) {
+		Cliente cliente = null;
+
 		try {
 			sb = new StringBuilder();
-			sb.append("SELECT senha FROM cliente WHERE senha = ?");
+			sb.append("SELECT email, senha FROM cliente WHERE email = ?");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
 			ps = conn.prepareStatement(sb.toString());
-			ps.setString(1, cliente.getSenha());
+			ps.setString(1, email);
 
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
 				cliente = new Cliente();
+				cliente.setEmail(rs.getString("EMAIL"));
 				cliente.setSenha(rs.getString("SENHA"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			ConfiguraConexaoBancoDeDados.fecharConn(conn);
+			ConfiguraConexaoBancoDeDados.fecharPS(ps);
+			ConfiguraConexaoBancoDeDados.fecharRS(rs);
 		}
 
 		return cliente;

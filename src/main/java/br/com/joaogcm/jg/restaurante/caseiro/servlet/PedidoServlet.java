@@ -49,10 +49,10 @@ public class PedidoServlet extends HttpServlet {
 
 			if (acao.equalsIgnoreCase("listarPedido")) {
 				request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
-				redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp", null);
+				redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp", null, null);
 			} else if (acao.equalsIgnoreCase("cadastrarPedido")) {
 				request.setAttribute("lanches", lancheService.buscarTodosLanches());
-				redirecionarParaPagina(request, response, "/paginas/pedido/cadastrar-pedido.jsp", null);
+				redirecionarParaPagina(request, response, "/paginas/pedido/cadastrar-pedido.jsp", null, null);
 			} else if (acao.equalsIgnoreCase("editarPedido")) {
 				String codigo = request.getParameter("codigo");
 				Integer codigoP = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
@@ -63,11 +63,12 @@ public class PedidoServlet extends HttpServlet {
 
 				if (pedido.getCodigo() != null) {
 					request.setAttribute("pedido", pedido);
-					redirecionarParaPagina(request, response, "/paginas/pedido/cadastrar-pedido.jsp", null);
+					redirecionarParaPagina(request, response, "/paginas/pedido/cadastrar-pedido.jsp", "Edite o pedido!",
+							"sucesso");
 				} else {
 					request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
 					redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp",
-							"Pedido não encontrado!");
+							"Pedido não encontrado!", "perigo");
 				}
 			} else if (acao.equalsIgnoreCase("removerPedido")) {
 				String codigo = request.getParameter("codigo");
@@ -82,17 +83,18 @@ public class PedidoServlet extends HttpServlet {
 
 					request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
 					redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp",
-							"Pedido removido com sucesso!");
+							"Pedido removido com sucesso!", "sucesso");
 				} else {
 					request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
 					redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp",
-							"Não foi possível remover o pedido!");
+							"Não foi possível remover o pedido!", "perigo");
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do pedido!");
+			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do pedido!",
+					"erro");
 		}
 	}
 
@@ -131,7 +133,8 @@ public class PedidoServlet extends HttpServlet {
 							}
 						} catch (NumberFormatException e) {
 							redirecionarParaPagina(request, response, "/error.jsp",
-									"Erro ao processar a solicitação do pedido pois o código do lanche é inválido!");
+									"Erro ao processar a solicitação do pedido pois o código do lanche é inválido!",
+									"erro");
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -163,7 +166,7 @@ public class PedidoServlet extends HttpServlet {
 
 				request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
 				redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp",
-						"Pedido atualizado com sucesso!");
+						"Pedido atualizado com sucesso!", "sucesso");
 			} else {
 				/* Adiciona novos relacionamentos entre Pedido e Lanche */
 				for (Lanche l : pedido.getLanches()) {
@@ -173,19 +176,24 @@ public class PedidoServlet extends HttpServlet {
 				pedidoService.adicionarPedido(pedido);
 
 				redirecionarParaPagina(request, response, "/paginas/pedido/cadastrar-pedido.jsp",
-						"Pedido adicionado com sucesso!");
+						"Pedido adicionado com sucesso!", "sucesso");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do pedido!");
+			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do pedido!",
+					"erro");
 		}
 	}
 
 	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina,
-			String mensagem) throws ServletException, IOException {
+			String mensagem, String tipoMensagem) throws ServletException, IOException {
 		if (mensagem != null) {
 			request.setAttribute("mensagem", mensagem);
+		}
+
+		if (tipoMensagem != null) {
+			request.setAttribute("tipoMensagem", tipoMensagem);
 		}
 
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher(pagina);

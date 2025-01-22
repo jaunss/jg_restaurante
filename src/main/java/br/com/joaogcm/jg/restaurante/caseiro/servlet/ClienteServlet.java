@@ -9,10 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mindrot.jbcrypt.BCrypt;
-
 import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
 import br.com.joaogcm.jg.restaurante.caseiro.service.ClienteService;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 
 @WebServlet(name = "Cliente", urlPatterns = { "/Cliente" })
 public class ClienteServlet extends HttpServlet {
@@ -39,9 +39,9 @@ public class ClienteServlet extends HttpServlet {
 
 			if (acao.equalsIgnoreCase("listarCliente")) {
 				request.setAttribute("clientes", clienteService.buscarTodosClientes());
-				redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp", null);
+				redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp", null, null);
 			} else if (acao.equalsIgnoreCase("cadastrarCliente")) {
-				redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null);
+				redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null, null);
 			} else if (acao.equalsIgnoreCase("editarCliente")) {
 				String codigo = request.getParameter("codigo");
 				Integer codigoC = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
@@ -52,11 +52,12 @@ public class ClienteServlet extends HttpServlet {
 
 				if (cliente.getCodigo() != null) {
 					request.setAttribute("cliente", cliente);
-					redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null);
+					redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp",
+							"Edite o cliente!", "sucesso");
 				} else {
 					request.setAttribute("clientes", clienteService.buscarTodosClientes());
 					redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
-							"Cliente não encontrado!");
+							"Cliente não encontrado!", "perigo");
 				}
 			} else if (acao.equalsIgnoreCase("removerCliente")) {
 				String codigo = request.getParameter("codigo");
@@ -71,17 +72,18 @@ public class ClienteServlet extends HttpServlet {
 
 					request.setAttribute("clientes", clienteService.buscarTodosClientes());
 					redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
-							"Cliente removido com sucesso!");
+							"Cliente removido com sucesso!", "sucesso");
 				} else {
 					request.setAttribute("clientes", clienteService.buscarTodosClientes());
 					redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
-							"Não foi possível remover o cliente!");
+							"Não foi possível remover o cliente!", "perigo");
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do cliente!");
+			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do cliente!",
+					"erro");
 		}
 	}
 
@@ -103,40 +105,69 @@ public class ClienteServlet extends HttpServlet {
 			cliente.setEmail(email != null && !email.isEmpty() ? email : null);
 			cliente.setTelefone(telefone != null && !telefone.isEmpty() ? telefone : null);
 			cliente.setCpf(cpf != null && !cpf.isEmpty() ? cpf : null);
-			cliente.setSenha(senha != null && !senha.isEmpty() ? senha : null);
 
-			gerarSenhaHash(cliente.getSenha());
+			String senhaHashGerada = gerarSenhaHash(senha.trim());
+			cliente.setSenha(senhaHashGerada != null && !senhaHashGerada.isEmpty() ? senhaHashGerada : null);
 
 			if (cliente.getCodigo() != null) {
 				clienteService.atualizarClientePorCodigo(cliente);
 
 				request.setAttribute("clientes", clienteService.buscarTodosClientes());
 				redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
-						"Cliente atualizado com sucesso!");
+						"Cliente atualizado com sucesso!", "sucesso");
 			} else {
 				clienteService.adicionarCliente(cliente);
 
-				redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp",
-						"Cliente cadastrado com sucesso!");
+				redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+						"Cliente cadastrado com sucesso!", "sucesso");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do cliente!");
+			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do cliente!",
+					"erro");
 		}
 	}
 
 	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina,
-			String mensagem) throws ServletException, IOException {
+			String mensagem, String tipoMensagem) throws ServletException, IOException {
 		if (mensagem != null) {
 			request.setAttribute("mensagem", mensagem);
+		}
+
+		if (tipoMensagem != null) {
+			request.setAttribute("tipoMensagem", tipoMensagem);
 		}
 
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher(pagina);
 		requestDispatcher.forward(request, response);
 	}
 
-	public String gerarSenhaHash(String senha) {
-		return BCrypt.hashpw(senha, BCrypt.gensalt());
+	/**
+	 * Iterações: 6 é o número de iterações que o Argon2 vai fazer (Quanto maior o
+	 * número, mais difícil será para alguém atacar e mais lento fica a execução).
+	 * 
+	 * Memória: 131072 é o tamanho da memória que o Argon2 deve utilizar (Quanto
+	 * maior a memória, mais difícil será para alguém atacar utilizando GPU's e mais
+	 * lento fica a execução).
+	 * 
+	 * Threads: 1 é o número de Threads que o Argon2 vai utilizar (1 já é o
+	 * suficiente para a maioria dos casos, mas se o servidor utilizar vários
+	 * núcleos pode aumentar esse número.
+	 * 
+	 * @param senhaInserida
+	 * @return
+	 */
+	public String gerarSenhaHash(String senhaInserida) {
+		Argon2 gerarSenhaHash = Argon2Factory.create();
+
+		char[] caracteresDaSenha = senhaInserida.toCharArray();
+
+		try {
+			return gerarSenhaHash.hash(6, 131072, 1, caracteresDaSenha);
+		} finally {
+			// Limpeza do array de caracteres da senha
+			java.util.Arrays.fill(caracteresDaSenha, ' ');
+		}
 	}
 }
