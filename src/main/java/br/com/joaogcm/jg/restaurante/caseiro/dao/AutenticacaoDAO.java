@@ -19,35 +19,6 @@ public class AutenticacaoDAO {
 
 	}
 
-	public Cliente autenticarClientePorEmail(String email) {
-		Cliente cliente = null;
-
-		try {
-			sb = new StringBuilder();
-			sb.append("SELECT email FROM cliente WHERE email = ?");
-
-			conn = new ConfiguraConexaoBancoDeDados().getConexao();
-
-			ps = conn.prepareStatement(sb.toString());
-			ps.setString(1, email);
-
-			rs = ps.executeQuery();
-
-			while (rs.next()) {
-				cliente = new Cliente();
-				cliente.setEmail(rs.getString("EMAIL"));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			ConfiguraConexaoBancoDeDados.fecharConn(conn);
-			ConfiguraConexaoBancoDeDados.fecharPS(ps);
-			ConfiguraConexaoBancoDeDados.fecharRS(rs);
-		}
-
-		return cliente;
-	}
-
 	public Cliente autenticarClientePorEmailESenha(String email) {
 		Cliente cliente = null;
 

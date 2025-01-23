@@ -10,10 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import br.com.joaogcm.jg.restaurante.caseiro.argon.ArgonUtil;
+import br.com.joaogcm.jg.restaurante.caseiro.jwt.JWTUtil;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
 import br.com.joaogcm.jg.restaurante.caseiro.service.AutenticacaoService;
-import de.mkammerer.argon2.Argon2;
-import de.mkammerer.argon2.Argon2Factory;
 
 @WebServlet(name = "Autenticacao", urlPatterns = { "/Autenticacao" })
 public class AutenticacaoServlet extends HttpServlet {
@@ -75,19 +75,20 @@ public class AutenticacaoServlet extends HttpServlet {
 			cliente.setEmail(email != null && !email.isEmpty() ? email : null);
 			cliente.setSenha(senha != null && !senha.isEmpty() ? senha.trim() : null);
 
-			Cliente clienteComEmailCadastrado = autenticacaoService.autenticarClientePorEmail(cliente.getEmail());
+			Cliente clienteComCadastro = autenticacaoService.autenticarClientePorEmailESenha(cliente.getEmail());
+			if (clienteComCadastro != null) {
+				if (ArgonUtil.verificarSenhaHash(cliente.getSenha(), clienteComCadastro.getSenha())) {
+					String tokenJwt = JWTUtil.gerarTokenJwt(clienteComCadastro.getEmail());
 
-			if (clienteComEmailCadastrado != null) {
-				Cliente clienteComSenhaCadastrada = autenticacaoService
-						.autenticarClientePorEmailESenha(cliente.getEmail());
+					if (tokenJwt != null && !tokenJwt.isEmpty()) {
+						response.addHeader("Authorization", "Bearer " + tokenJwt);
 
-				if (clienteComSenhaCadastrada != null
-						&& verificarSenhaHash(cliente.getSenha(), clienteComSenhaCadastrada.getSenha())) {
-					HttpSession clienteDaSessao = request.getSession();
-					clienteDaSessao.setAttribute("clienteDaSessaoAutenticado", clienteComSenhaCadastrada);
-
-					redirecionarParaPagina(request, response, "/index.jsp",
-							"Usuário " + cliente.getEmail() + " autenticado com sucesso!", "sucesso");
+						redirecionarParaPagina(request, response, "/index.jsp",
+								"Usuário " + cliente.getEmail() + " autenticado com sucesso!", "sucesso");
+					} else {
+						redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+								"Problema ao recuperar o token do cliente!", "perigo");
+					}
 				} else {
 					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
 							"Email e/ou Senha incorretos!", "perigo");
@@ -104,6 +105,18 @@ public class AutenticacaoServlet extends HttpServlet {
 		}
 	}
 
+	/**
+	 * Redireciona para determinadas páginas incluindo mensagem e o tipo da
+	 * mensagem.
+	 * 
+	 * @param request
+	 * @param response
+	 * @param pagina
+	 * @param mensagem
+	 * @param tipoMensagem
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina,
 			String mensagem, String tipoMensagem) throws ServletException, IOException {
 		if (mensagem != null) {
@@ -116,26 +129,5 @@ public class AutenticacaoServlet extends HttpServlet {
 
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher(pagina);
 		requestDispatcher.forward(request, response);
-	}
-
-	/**
-	 * Verifica a senha hash armazenada no banco de dados com a senha inserida pelo
-	 * usuário na autenticação.
-	 * 
-	 * @param senhaInserida
-	 * @param senhaHashGravada
-	 * @return
-	 */
-	public boolean verificarSenhaHash(String senhaInserida, String senhaHashGravada) {
-		Argon2 verificarSenhaHash = Argon2Factory.create();
-
-		char[] caracteresDaSenha = senhaInserida.toCharArray();
-
-		try {
-			return verificarSenhaHash.verify(senhaHashGravada, caracteresDaSenha);
-		} finally {
-			// Limpeza do array de caracteres da senha
-			java.util.Arrays.fill(caracteresDaSenha, ' ');
-		}
 	}
 }

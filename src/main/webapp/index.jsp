@@ -37,6 +37,18 @@
 			</c:if>
 		</c:if>
 
+		<c:if test="cliente == null">
+			<a
+				href="${pageContext.request.contextPath}/Autenticacao?acao=autenticarCliente"><i
+				class="bi bi-key"></i> Entrar</a>
+		</c:if>
+
+		<c:if test="cliente != null">
+			<a
+				href="${pageContext.request.contextPath}/Autenticacao?acao=deslogarCliente"><i
+				class="bi bi-box-arrow-in-right"></i> Sair</a>
+		</c:if>
+
 		<h1>Escolha o seu lanche!</h1>
 		<p>Confira algumas das nossas deliciosas opções de lanches abaixo.</p>
 

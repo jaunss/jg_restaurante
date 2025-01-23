@@ -126,6 +126,18 @@ public class LancheServlet extends HttpServlet {
 
 	}
 
+	/**
+	 * Redireciona para determinadas páginas incluindo mensagem e o tipo da
+	 * mensagem.
+	 * 
+	 * @param request
+	 * @param response
+	 * @param pagina
+	 * @param mensagem
+	 * @param tipoMensagem
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina,
 			String mensagem, String tipoMensagem) throws ServletException, IOException {
 		if (mensagem != null) {
