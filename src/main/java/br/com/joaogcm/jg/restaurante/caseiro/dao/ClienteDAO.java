@@ -24,7 +24,7 @@ public class ClienteDAO {
 	public void adicionarCliente(Cliente cliente) {
 		try {
 			sb = new StringBuilder();
-			sb.append("INSERT INTO cliente (nome, email, telefone, cpf, senha) VALUES (?, ?, ?, ?, ?)");
+			sb.append("INSERT INTO cliente (nome, email, telefone, cpf, senha, perfil_id) VALUES (?, ?, ?, ?, ?, ?)");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
@@ -34,6 +34,7 @@ public class ClienteDAO {
 			ps.setString(3, cliente.getTelefone());
 			ps.setString(4, cliente.getCpf());
 			ps.setString(5, cliente.getSenha());
+			ps.setInt(6, cliente.getCodigoPerfil());
 
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -47,7 +48,8 @@ public class ClienteDAO {
 	public void atualizarClientePorCodigo(Cliente cliente) {
 		try {
 			sb = new StringBuilder();
-			sb.append("UPDATE cliente SET nome = ?, email = ?, telefone = ?, cpf = ?, senha = ? WHERE codigo = ?");
+			sb.append(
+					"UPDATE cliente SET nome = ?, email = ?, telefone = ?, cpf = ?, senha = ?, perfil_id = ? WHERE codigo = ?");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
@@ -57,7 +59,8 @@ public class ClienteDAO {
 			ps.setString(3, cliente.getTelefone());
 			ps.setString(4, cliente.getCpf());
 			ps.setString(5, cliente.getSenha());
-			ps.setInt(6, cliente.getCodigo());
+			ps.setInt(6, cliente.getCodigoPerfil());
+			ps.setInt(7, cliente.getCodigo());
 
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -106,6 +109,7 @@ public class ClienteDAO {
 				cliente.setNome(rs.getString("NOME"));
 				cliente.setEmail(rs.getString("EMAIL"));
 				cliente.setTelefone(rs.getString("TELEFONE"));
+				cliente.setCodigoPerfil(rs.getInt("PERFIL_ID"));
 
 				clientes.add(cliente);
 			}
@@ -138,6 +142,8 @@ public class ClienteDAO {
 				cliente.setNome(rs.getString("NOME"));
 				cliente.setEmail(rs.getString("EMAIL"));
 				cliente.setTelefone(rs.getString("TELEFONE"));
+				cliente.setCpf(rs.getString("CPF"));
+				cliente.setCodigoPerfil(rs.getInt("PERFIL_ID"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

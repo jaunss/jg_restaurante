@@ -24,7 +24,7 @@ public class AutenticacaoDAO {
 
 		try {
 			sb = new StringBuilder();
-			sb.append("SELECT email, senha FROM cliente WHERE email = ?");
+			sb.append("SELECT email, senha, perfil_id FROM cliente WHERE email = ?");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
@@ -37,6 +37,7 @@ public class AutenticacaoDAO {
 				cliente = new Cliente();
 				cliente.setEmail(rs.getString("EMAIL"));
 				cliente.setSenha(rs.getString("SENHA"));
+				cliente.setCodigoPerfil(rs.getInt("PERFIL_ID"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

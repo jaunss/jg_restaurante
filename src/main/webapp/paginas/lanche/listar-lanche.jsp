@@ -37,10 +37,15 @@
 			</c:if>
 		</c:if>
 
-		<a class="btn btn-success btn-sm" style="height: 37px"
-			href="${pageContext.request.contextPath}/Lanche?acao=cadastrarLanche"
-			title="Cadastrar Lanche"><i class="bi bi-pencil-square"></i>
-			Cadastrar Lanche</a>
+		<c:choose>
+			<c:when
+				test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.codigoPerfil == 2}">
+				<a class="btn btn-success btn-sm" style="height: 37px"
+					href="${pageContext.request.contextPath}/Lanche?acao=cadastrarLanche"
+					title="Cadastrar Lanche"><i class="bi bi-pencil-square"></i>
+					Cadastrar Lanche</a>
+			</c:when>
+		</c:choose>
 
 		<div class="table-responsive mt-4">
 			<table class="table table-striped table-bordered">
@@ -49,7 +54,12 @@
 						<th>Nome</th>
 						<th>Descrição do Lanche</th>
 						<th>Preço em R$</th>
-						<th>Ações</th>
+						<c:choose>
+							<c:when
+								test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.codigoPerfil == 2}">
+								<th>Ações</th>
+							</c:when>
+						</c:choose>
 					</tr>
 				</thead>
 				<tbody>
@@ -58,12 +68,17 @@
 							<td>${lanche.nome}</td>
 							<td>${lanche.descricao_conteudo}</td>
 							<td>${lanche.preco}</td>
-							<td><a class="btn btn-primary btn-sm"
-								href="${pageContext.request.contextPath}/Lanche?acao=editarLanche&codigo=${lanche.codigo}"
-								title="Editar Lanche"><i class="bi bi-pencil-square"></i></a> <a
-								class="btn btn-danger btn-sm"
-								href="${pageContext.request.contextPath}/Lanche?acao=removerLanche&codigo=${lanche.codigo}"
-								title="Remover Lanche"><i class="bi bi-trash"></i></a></td>
+							<c:choose>
+								<c:when
+									test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.codigoPerfil == 2}">
+									<td><a class="btn btn-primary btn-sm"
+										href="${pageContext.request.contextPath}/Lanche?acao=editarLanche&codigo=${lanche.codigo}"
+										title="Editar Lanche"><i class="bi bi-pencil-square"></i></a>
+										<a class="btn btn-danger btn-sm"
+										href="${pageContext.request.contextPath}/Lanche?acao=removerLanche&codigo=${lanche.codigo}"
+										title="Remover Lanche"><i class="bi bi-trash"></i></a></td>
+								</c:when>
+							</c:choose>
 						</tr>
 					</c:forEach>
 				</tbody>

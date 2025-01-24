@@ -2,6 +2,7 @@ package br.com.joaogcm.jg.restaurante.caseiro.servlet;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -17,6 +18,8 @@ import br.com.joaogcm.jg.restaurante.caseiro.service.LancheService;
 public class LancheServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger logger = Logger.getLogger(AutenticacaoServlet.class.getName());
 
 	private Lanche lanche = null;
 	private LancheService lancheService = null;
@@ -80,7 +83,7 @@ public class LancheServlet extends HttpServlet {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.severe("Erro ao processar a solicitação do lanche: " + e.getMessage());
 
 			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do lanche!",
 					"erro");
@@ -118,7 +121,7 @@ public class LancheServlet extends HttpServlet {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.severe("Erro ao processar a solicitação do lanche: " + e.getMessage());
 
 			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do lanche!",
 					"erro");

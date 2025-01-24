@@ -1,6 +1,7 @@
 package br.com.joaogcm.jg.restaurante.caseiro.servlet;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -11,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import br.com.joaogcm.jg.restaurante.caseiro.argon.ArgonUtil;
-import br.com.joaogcm.jg.restaurante.caseiro.jwt.JWTUtil;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
 import br.com.joaogcm.jg.restaurante.caseiro.service.AutenticacaoService;
 
@@ -19,6 +19,8 @@ import br.com.joaogcm.jg.restaurante.caseiro.service.AutenticacaoService;
 public class AutenticacaoServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger logger = Logger.getLogger(AutenticacaoServlet.class.getName());
 
 	private Cliente cliente = null;
 	private AutenticacaoService autenticacaoService = null;
@@ -49,14 +51,14 @@ public class AutenticacaoServlet extends HttpServlet {
 					deslogarClienteDaSessao.invalidate();
 
 					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
-							"Volte novamente! Um até logo :(", "perigo");
+							"Já vai? :( Um até logo e retorne novamente :)", "perigo");
 				} else {
 					redirecionarParaPagina(request, response, "/error.jsp",
 							"Erro ao processar a solicitação de encerramento da sessão do cliente!", "erro");
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.severe("Erro ao processar a solicitação de autenticação: " + e.getMessage());
 
 			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação de autenticação!",
 					"erro");
@@ -78,27 +80,23 @@ public class AutenticacaoServlet extends HttpServlet {
 			Cliente clienteComCadastro = autenticacaoService.autenticarClientePorEmailESenha(cliente.getEmail());
 			if (clienteComCadastro != null) {
 				if (ArgonUtil.verificarSenhaHash(cliente.getSenha(), clienteComCadastro.getSenha())) {
-					String tokenJwt = JWTUtil.gerarTokenJwt(clienteComCadastro.getEmail());
+					HttpSession sessaoUsuario = request.getSession(true);
 
-					if (tokenJwt != null && !tokenJwt.isEmpty()) {
-						response.addHeader("Authorization", "Bearer " + tokenJwt);
+					sessaoUsuario.setAttribute("clienteComCadastro", clienteComCadastro);
+					sessaoUsuario.setMaxInactiveInterval(1800);
 
-						redirecionarParaPagina(request, response, "/index.jsp",
-								"Usuário " + cliente.getEmail() + " autenticado com sucesso!", "sucesso");
-					} else {
-						redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
-								"Problema ao recuperar o token do cliente!", "perigo");
-					}
+					redirecionarParaPagina(request, response, "/index.jsp", "Seja bem-vindo ao JG Restaurante!",
+							"sucesso");
 				} else {
 					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
 							"Email e/ou Senha incorretos!", "perigo");
 				}
 			} else {
 				redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp",
-						"Você ainda não tem um cadastro, realize um cadastro!", "perigo");
+						"Você ainda não tem um cadastro, faça um!", "perigo");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.severe("Erro ao processar a solicitação de autenticação: " + e.getMessage());
 
 			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação de autenticação!",
 					"erro");

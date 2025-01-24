@@ -1,6 +1,7 @@
 package br.com.joaogcm.jg.restaurante.caseiro.servlet;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -8,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
 import br.com.joaogcm.jg.restaurante.caseiro.service.ClienteService;
@@ -18,6 +20,8 @@ import de.mkammerer.argon2.Argon2Factory;
 public class ClienteServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger logger = Logger.getLogger(AutenticacaoServlet.class.getName());
 
 	private Cliente cliente = null;
 	private ClienteService clienteService = null;
@@ -38,8 +42,18 @@ public class ClienteServlet extends HttpServlet {
 			clienteService = new ClienteService();
 
 			if (acao.equalsIgnoreCase("listarCliente")) {
-				request.setAttribute("clientes", clienteService.buscarTodosClientes());
-				redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp", null, null);
+				HttpSession sessaoCliente = request.getSession(false);
+				Cliente cliente = (Cliente) sessaoCliente.getAttribute("clienteComCadastro");
+
+				if (sessaoCliente != null && cliente != null && cliente.getCodigoPerfil() == 1) {
+					Cliente newCliente = clienteService.buscarClientePorCodigo(cliente);
+
+					request.setAttribute("newCliente", newCliente);
+					redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp", null, null);
+				} else {
+					request.setAttribute("clientes", clienteService.buscarTodosClientes());
+					redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp", null, null);
+				}
 			} else if (acao.equalsIgnoreCase("cadastrarCliente")) {
 				redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null, null);
 			} else if (acao.equalsIgnoreCase("editarCliente")) {
@@ -80,7 +94,7 @@ public class ClienteServlet extends HttpServlet {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.severe("Erro ao processar a solicitação do cliente: " + e.getMessage());
 
 			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do cliente!",
 					"erro");
@@ -122,7 +136,7 @@ public class ClienteServlet extends HttpServlet {
 						"Cliente cadastrado com sucesso!", "sucesso");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.severe("Erro ao processar a solicitação do cliente: " + e.getMessage());
 
 			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do cliente!",
 					"erro");

@@ -1,6 +1,7 @@
 package br.com.joaogcm.jg.restaurante.caseiro.servlet;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 public class HomeServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger logger = Logger.getLogger(AutenticacaoServlet.class.getName());
 
 	public HomeServlet() {
 		super();
@@ -30,7 +33,7 @@ public class HomeServlet extends HttpServlet {
 				redirecionarParaPagina(request, response, "/index.jsp", "Bem-vindo ao JG Restaurante :)", "sucesso");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.severe("Erro ao processar a solicitação da home: " + e.getMessage());
 
 			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação da home!", "erro");
 		}

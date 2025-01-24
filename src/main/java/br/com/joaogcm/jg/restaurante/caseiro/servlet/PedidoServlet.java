@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -23,6 +24,8 @@ import br.com.joaogcm.jg.restaurante.caseiro.service.PedidoService;
 public class PedidoServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger logger = Logger.getLogger(AutenticacaoServlet.class.getName());
 
 	private Pedido pedido = null;
 	private Lanche lanche = null;
@@ -91,7 +94,7 @@ public class PedidoServlet extends HttpServlet {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.severe("Erro ao processar a solicitação do pedido: " + e.getMessage());
 
 			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do pedido!",
 					"erro");
@@ -179,7 +182,7 @@ public class PedidoServlet extends HttpServlet {
 						"Pedido adicionado com sucesso!", "sucesso");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.severe("Erro ao processar a solicitação do pedido: " + e.getMessage());
 
 			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do pedido!",
 					"erro");

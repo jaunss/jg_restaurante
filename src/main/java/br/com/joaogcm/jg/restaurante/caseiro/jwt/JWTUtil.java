@@ -24,9 +24,9 @@ public class JWTUtil {
 	 * @throws JOSEException
 	 */
 	public static String gerarTokenJwt(String email) throws KeyLengthException, JOSEException {
-		JWTClaimsSet claims = new JWTClaimsSet.Builder().subject("jg_restaurante_caseiro").issuer(email)
-				.issueTime(new Date()).expirationTime(obterDataExpiracaoToken())
-				.claim("roles", Arrays.asList("ROLE_ADMIN", "ROLE_USER")).build();
+		JWTClaimsSet claims = new JWTClaimsSet.Builder().subject(email).issuer(email).issueTime(new Date())
+				.expirationTime(obterDataExpiracaoToken()).claim("roles", Arrays.asList("ROLE_ADMIN", "ROLE_USER"))
+				.build();
 
 		SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS512), claims);
 		signedJWT.sign(new MACSigner(obterChaveSecretaToken().getBytes()));

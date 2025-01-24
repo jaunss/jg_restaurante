@@ -8,6 +8,7 @@ public class Cliente {
 	private String telefone;
 	private String cpf;
 	private String senha;
+	private Integer codigoPerfil;
 
 	public Cliente() {
 
@@ -59,5 +60,13 @@ public class Cliente {
 
 	public void setSenha(String senha) {
 		this.senha = senha;
+	}
+
+	public Integer getCodigoPerfil() {
+		return codigoPerfil;
+	}
+
+	public void setCodigoPerfil(Integer codigoPerfil) {
+		this.codigoPerfil = codigoPerfil;
 	}
 }

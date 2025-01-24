@@ -37,10 +37,16 @@
 			</c:if>
 		</c:if>
 
-		<a class="btn btn-success btn-sm" style="height: 37px"
-			href="${pageContext.request.contextPath}/Cliente?acao=cadastrarCliente"
-			title="Cadastrar Cliente"><i class="bi bi-pencil-square"></i>
-			Cadastrar Cliente</a>
+		<!-- Se o perfil do cliente for do tipo 2, ou seja, Administrador, o mesmo verá o link de cadastro! -->
+		<c:choose>
+			<c:when
+				test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.codigoPerfil == 2}">
+				<a class="btn btn-success btn-sm" style="height: 37px"
+					href="${pageContext.request.contextPath}/Cliente?acao=cadastrarCliente"
+					title="Cadastrar Cliente"><i class="bi bi-pencil-square"></i>
+					Cadastrar Cliente</a>
+			</c:when>
+		</c:choose>
 
 		<div class="table-responsive mt-4">
 			<table class="table table-striped table-bordered">
@@ -49,23 +55,45 @@
 						<th>Nome</th>
 						<th>Email</th>
 						<th>Telefone</th>
+						<th>CPF</th>
 						<th>Ações</th>
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="cliente" items="${clientes}">
-						<tr>
-							<td>${cliente.nome}</td>
-							<td>${cliente.email}</td>
-							<td>${cliente.telefone}</td>
-							<td><a class="btn btn-primary btn-sm"
-								href="${pageContext.request.contextPath}/Cliente?acao=editarCliente&codigo=${cliente.codigo}"
-								title="Editar Cliente"><i class="bi bi-pencil-square"></i></a> <a
-								class="btn btn-danger btn-sm"
-								href="${pageContext.request.contextPath}/Cliente?acao=removerCliente&codigo=${cliente.codigo}"
-								title="Remover Cliente"><i class="bi bi-trash"></i></a></td>
-						</tr>
-					</c:forEach>
+					<!-- Se o perfil do cliente for do tipo 1, ou seja, Consumidor, o mesmo verá somente o seu cadastro! -->
+					<c:choose>
+						<c:when
+							test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.codigoPerfil == 1}">
+							<tr>
+								<td>${newCliente.nome}</td>
+								<td>${newCliente.email}</td>
+								<td>${newCliente.telefone}</td>
+								<td>${newCliente.cpf}</td>
+								<td><a class="btn btn-primary btn-sm"
+									href="${pageContext.request.contextPath}/Cliente?acao=editarCliente&codigo=${newCliente.codigo}"
+									title="Editar Cliente"><i class="bi bi-pencil-square"></i></a>
+									<a class="btn btn-danger btn-sm"
+									href="${pageContext.request.contextPath}/Cliente?acao=removerCliente&codigo=${newCliente.codigo}"
+									title="Remover Cliente"><i class="bi bi-trash"></i></a></td>
+							</tr>
+						</c:when>
+
+						<c:otherwise>
+							<c:forEach var="cliente" items="${clientes}">
+								<tr>
+									<td>${cliente.nome}</td>
+									<td>${cliente.email}</td>
+									<td>${cliente.telefone}</td>
+									<td><a class="btn btn-primary btn-sm"
+										href="${pageContext.request.contextPath}/Cliente?acao=editarCliente&codigo=${cliente.codigo}"
+										title="Editar Cliente"><i class="bi bi-pencil-square"></i></a>
+										<a class="btn btn-danger btn-sm"
+										href="${pageContext.request.contextPath}/Cliente?acao=removerCliente&codigo=${cliente.codigo}"
+										title="Remover Cliente"><i class="bi bi-trash"></i></a></td>
+								</tr>
+							</c:forEach>
+						</c:otherwise>
+					</c:choose>
 				</tbody>
 			</table>
 		</div>

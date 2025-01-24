@@ -1,6 +1,7 @@
 package br.com.joaogcm.jg.restaurante.caseiro.servlet;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -18,6 +19,8 @@ import br.com.joaogcm.jg.restaurante.caseiro.service.PedidoService;
 public class PedidoLancheServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger logger = Logger.getLogger(AutenticacaoServlet.class.getName());
 
 	private Pedido pedido = null;
 	private Lanche lanche = null;
@@ -44,7 +47,7 @@ public class PedidoLancheServlet extends HttpServlet {
 			lancheService = new LancheService();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.severe("Erro ao processar a solicitação do pedido e/ou lanche: " + e.getMessage());
 
 			redirecionarParaPagina(request, response, "/error.jsp",
 					"Erro ao processar a solicitação do pedido e/ou lanche!", "erro");
@@ -61,7 +64,7 @@ public class PedidoLancheServlet extends HttpServlet {
 			lancheService = new LancheService();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.severe("Erro ao processar a solicitação do pedido e/ou lanche: " + e.getMessage());
 
 			redirecionarParaPagina(request, response, "/error.jsp",
 					"Erro ao processar a solicitação do pedido e/ou lanche!", "erro");
