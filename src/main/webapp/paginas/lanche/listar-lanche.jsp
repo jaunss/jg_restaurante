@@ -37,9 +37,10 @@
 			</c:if>
 		</c:if>
 
+		<!-- Se o perfil do cliente for do tipo 2, ou seja, Administrador, o mesmo verá o link de cadastro do lanche! -->
 		<c:choose>
 			<c:when
-				test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.codigoPerfil == 2}">
+				test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.perfil && sessionScope.clienteComCadastro.perfil != null && sessionScope.clienteComCadastro.perfil.codigo == 2}">
 				<a class="btn btn-success btn-sm" style="height: 37px"
 					href="${pageContext.request.contextPath}/Lanche?acao=cadastrarLanche"
 					title="Cadastrar Lanche"><i class="bi bi-pencil-square"></i>
@@ -51,12 +52,14 @@
 			<table class="table table-striped table-bordered">
 				<thead style="background-color: #fd7e14; color: white;">
 					<tr>
-						<th>Nome</th>
+						<th>Nome do Lanche</th>
 						<th>Descrição do Lanche</th>
-						<th>Preço em R$</th>
+						<th>Preço do Lanche</th>
+
+						<!-- Se o perfil do cliente for do tipo 2, ou seja, Administrador, o mesmo verá o nome do título de Ações! -->
 						<c:choose>
 							<c:when
-								test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.codigoPerfil == 2}">
+								test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.perfil && sessionScope.clienteComCadastro.perfil != null && sessionScope.clienteComCadastro.perfil.codigo == 2}">
 								<th>Ações</th>
 							</c:when>
 						</c:choose>
@@ -67,10 +70,12 @@
 						<tr>
 							<td>${lanche.nome}</td>
 							<td>${lanche.descricao_conteudo}</td>
-							<td>${lanche.preco}</td>
+							<td>R$ ${lanche.preco}</td>
+
+							<!-- Se o perfil do cliente for do tipo 2, ou seja, Administrador, o mesmo verá os links de edição e remoção! -->
 							<c:choose>
 								<c:when
-									test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.codigoPerfil == 2}">
+									test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.perfil && sessionScope.clienteComCadastro.perfil != null && sessionScope.clienteComCadastro.perfil.codigo == 2}">
 									<td><a class="btn btn-primary btn-sm"
 										href="${pageContext.request.contextPath}/Lanche?acao=editarLanche&codigo=${lanche.codigo}"
 										title="Editar Lanche"><i class="bi bi-pencil-square"></i></a>

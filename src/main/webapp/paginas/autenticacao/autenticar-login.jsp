@@ -55,6 +55,10 @@
 				<button type="reset" class="btn btn-secondary">Limpar</button>
 				<button type="submit" class="btn btn-success">Realizar
 					Login</button>
+				<a class="btn btn-success btn-sm" style="height: 37px"
+					href="${pageContext.request.contextPath}/Cliente?acao=cadastrarCliente"
+					title="Cadastrar Cliente"><i class="bi bi-pencil-square"></i>
+					Cadastre-se</a>
 			</div>
 		</form>
 	</main>

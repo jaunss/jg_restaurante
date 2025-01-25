@@ -69,6 +69,13 @@ public class AuthenticationFilter extends HttpFilter implements Filter {
 				}
 			}
 
+			// Adiciona verificação para arquivos estáticos, como CSS, JS, imagens, etc.
+			if (requestURI.endsWith(".css") || requestURI.endsWith(".js") || requestURI.endsWith(".png")
+					|| requestURI.endsWith(".jpg") || requestURI.endsWith(".jpeg") || requestURI.endsWith(".gif")
+					|| requestURI.endsWith(".woff") || requestURI.endsWith(".woff2") || requestURI.endsWith(".ttf")) {
+				liberarAcesso = true;
+			}
+
 			if (liberarAcesso) {
 				chain.doFilter(request, response);
 				return;

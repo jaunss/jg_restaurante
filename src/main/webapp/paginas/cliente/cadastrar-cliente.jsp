@@ -77,6 +77,23 @@
 					class="form-control" placeholder="********" required="required">
 			</div>
 
+			<!-- Se o perfil do cliente for do tipo 2, ou seja, Administrador, o mesmo verá a listagem do perfil! -->
+			<c:choose>
+				<c:when
+					test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.perfil && sessionScope.clienteComCadastro.perfil != null && sessionScope.clienteComCadastro.perfil.codigo == 2}">
+					<div class="col-md-6">
+						<label for="perfilC" class="form-label">Perfil do Cliente</label>
+						<select class="form-select" id="perfil" name="perfil.codigo">
+							<option value="" disabled="disabled" selected="selected">Selecione...</option>
+							<c:forEach var="perfil" items="${perfis}">
+								<option value="${perfil.codigo}"
+									<c:if test="${perfil.codigo == cliente.perfil.codigo}">selected</c:if>>${perfil.nome}</option>
+							</c:forEach>
+						</select>
+					</div>
+				</c:when>
+			</c:choose>
+
 			<div class="col-12 text-end">
 				<button type="reset" class="btn btn-secondary">
 					<i class="bi bi-x-circle"></i> Limpar Dados
@@ -85,7 +102,7 @@
 					<i class="bi bi-save"></i> Salvar Cliente
 				</button>
 				<a class="btn btn-success btn-sm" style="height: 37px"
-					href="${pageContext.request.contextPath}/Autenticacao?acao=autenticarLogin"
+					href="${pageContext.request.contextPath}/Autenticacao?acao=autenticarCliente"
 					title="Voltar"><i class="bi bi-pencil-square"></i> Voltar</a>
 			</div>
 		</form>

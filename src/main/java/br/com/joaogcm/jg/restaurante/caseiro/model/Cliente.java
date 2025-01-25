@@ -8,7 +8,7 @@ public class Cliente {
 	private String telefone;
 	private String cpf;
 	private String senha;
-	private Integer codigoPerfil;
+	private Perfil perfil;
 
 	public Cliente() {
 
@@ -62,11 +62,11 @@ public class Cliente {
 		this.senha = senha;
 	}
 
-	public Integer getCodigoPerfil() {
-		return codigoPerfil;
+	public Perfil getPerfil() {
+		return perfil;
 	}
 
-	public void setCodigoPerfil(Integer codigoPerfil) {
-		this.codigoPerfil = codigoPerfil;
+	public void setPerfil(Perfil perfil) {
+		this.perfil = perfil;
 	}
 }

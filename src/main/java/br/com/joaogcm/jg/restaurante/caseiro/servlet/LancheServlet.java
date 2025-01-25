@@ -37,6 +37,7 @@ public class LancheServlet extends HttpServlet {
 
 		try {
 			lanche = new Lanche();
+			
 			lancheService = new LancheService();
 
 			if (acao.equalsIgnoreCase("listarLanche")) {
@@ -94,6 +95,7 @@ public class LancheServlet extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			lanche = new Lanche();
+			
 			lancheService = new LancheService();
 
 			String codigo = request.getParameter("codigo");

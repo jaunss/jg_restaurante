@@ -37,10 +37,10 @@
 			</c:if>
 		</c:if>
 
-		<!-- Se o perfil do cliente for do tipo 2, ou seja, Administrador, o mesmo verá o link de cadastro! -->
+		<!-- Se o perfil do cliente for do tipo 2, ou seja, Administrador, o mesmo verá o link de cadastro do cliente! -->
 		<c:choose>
 			<c:when
-				test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.codigoPerfil == 2}">
+				test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.perfil && sessionScope.clienteComCadastro.perfil != null && sessionScope.clienteComCadastro.perfil.codigo == 2}">
 				<a class="btn btn-success btn-sm" style="height: 37px"
 					href="${pageContext.request.contextPath}/Cliente?acao=cadastrarCliente"
 					title="Cadastrar Cliente"><i class="bi bi-pencil-square"></i>
@@ -60,10 +60,10 @@
 					</tr>
 				</thead>
 				<tbody>
-					<!-- Se o perfil do cliente for do tipo 1, ou seja, Consumidor, o mesmo verá somente o seu cadastro! -->
+					<!-- Se o perfil do cliente for do tipo 1, ou seja, Consumidor, o mesmo verá somente o resultado do seu cadastro! -->
 					<c:choose>
 						<c:when
-							test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.codigoPerfil == 1}">
+							test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.perfil && sessionScope.clienteComCadastro.perfil != null && sessionScope.clienteComCadastro.perfil.codigo == 1}">
 							<tr>
 								<td>${newCliente.nome}</td>
 								<td>${newCliente.email}</td>

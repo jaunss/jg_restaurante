@@ -38,16 +38,17 @@ public class AutenticacaoServlet extends HttpServlet {
 
 		try {
 			cliente = new Cliente();
+
 			autenticacaoService = new AutenticacaoService();
 
 			if (acao.equalsIgnoreCase("autenticarCliente")) {
 				redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
 						"Insira os dados para autenticar!", "sucesso");
 			} else if (acao.equalsIgnoreCase("deslogarCliente")) {
-
 				HttpSession deslogarClienteDaSessao = request.getSession(false);
+				Cliente cliente = (Cliente) deslogarClienteDaSessao.getAttribute("clienteComCadastro");
 
-				if (deslogarClienteDaSessao != null) {
+				if (deslogarClienteDaSessao != null && cliente != null) {
 					deslogarClienteDaSessao.invalidate();
 
 					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
@@ -69,6 +70,7 @@ public class AutenticacaoServlet extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			cliente = new Cliente();
+
 			autenticacaoService = new AutenticacaoService();
 
 			String email = request.getParameter("email");

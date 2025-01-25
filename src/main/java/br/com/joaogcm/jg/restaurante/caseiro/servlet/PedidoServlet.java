@@ -47,6 +47,7 @@ public class PedidoServlet extends HttpServlet {
 
 		try {
 			pedido = new Pedido();
+			
 			pedidoService = new PedidoService();
 			lancheService = new LancheService();
 

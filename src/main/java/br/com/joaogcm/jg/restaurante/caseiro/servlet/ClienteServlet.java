@@ -12,7 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
+import br.com.joaogcm.jg.restaurante.caseiro.model.Perfil;
 import br.com.joaogcm.jg.restaurante.caseiro.service.ClienteService;
+import br.com.joaogcm.jg.restaurante.caseiro.service.PerfilService;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 
@@ -24,7 +26,9 @@ public class ClienteServlet extends HttpServlet {
 	private static final Logger logger = Logger.getLogger(AutenticacaoServlet.class.getName());
 
 	private Cliente cliente = null;
+	private Perfil perfil = null;
 	private ClienteService clienteService = null;
+	private PerfilService perfilService = null;
 
 	public ClienteServlet() {
 		super();
@@ -39,23 +43,42 @@ public class ClienteServlet extends HttpServlet {
 
 		try {
 			cliente = new Cliente();
+
 			clienteService = new ClienteService();
+			perfilService = new PerfilService();
 
 			if (acao.equalsIgnoreCase("listarCliente")) {
 				HttpSession sessaoCliente = request.getSession(false);
 				Cliente cliente = (Cliente) sessaoCliente.getAttribute("clienteComCadastro");
 
-				if (sessaoCliente != null && cliente != null && cliente.getCodigoPerfil() == 1) {
+				if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
+						&& cliente.getPerfil().getCodigo() == 1) {
 					Cliente newCliente = clienteService.buscarClientePorCodigo(cliente);
 
 					request.setAttribute("newCliente", newCliente);
 					redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp", null, null);
-				} else {
+				} else if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
+						&& cliente.getPerfil().getCodigo() == 2) {
 					request.setAttribute("clientes", clienteService.buscarTodosClientes());
 					redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp", null, null);
+				} else {
+					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+							"Você não está logado, faça o login!", "perigo");
 				}
 			} else if (acao.equalsIgnoreCase("cadastrarCliente")) {
-				redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null, null);
+				HttpSession sessaoCliente = request.getSession(false);
+				Cliente cliente = (Cliente) sessaoCliente.getAttribute("clienteComCadastro");
+
+				if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
+						&& cliente.getPerfil().getCodigo() == 1) {
+					redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null, null);
+				} else if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
+						&& cliente.getPerfil().getCodigo() == 2) {
+					request.setAttribute("perfis", perfilService.buscarPerfilPorCodigo(cliente.getPerfil()));
+					redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null, null);
+				} else {
+					redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null, null);
+				}
 			} else if (acao.equalsIgnoreCase("editarCliente")) {
 				String codigo = request.getParameter("codigo");
 				Integer codigoC = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
@@ -105,7 +128,10 @@ public class ClienteServlet extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			cliente = new Cliente();
+			perfil = new Perfil();
+
 			clienteService = new ClienteService();
+			perfilService = new PerfilService();
 
 			String codigo = request.getParameter("codigo");
 			String nome = request.getParameter("nome");
@@ -113,6 +139,7 @@ public class ClienteServlet extends HttpServlet {
 			String telefone = request.getParameter("telefone");
 			String cpf = request.getParameter("cpf");
 			String senha = request.getParameter("senha");
+			String perfil_id = request.getParameter("perfil.codigo");
 
 			cliente.setCodigo(codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null);
 			cliente.setNome(nome != null && !nome.isEmpty() ? nome : null);
@@ -122,6 +149,9 @@ public class ClienteServlet extends HttpServlet {
 
 			String senhaHashGerada = gerarSenhaHash(senha.trim());
 			cliente.setSenha(senhaHashGerada != null && !senhaHashGerada.isEmpty() ? senhaHashGerada : null);
+
+			perfil.setCodigo(perfil_id != null && !perfil_id.isEmpty() ? Integer.parseInt(perfil_id) : null);
+			cliente.setPerfil(perfil);
 
 			if (cliente.getCodigo() != null) {
 				clienteService.atualizarClientePorCodigo(cliente);

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import br.com.joaogcm.jg.restaurante.caseiro.configuration.connection.ConfiguraConexaoBancoDeDados;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
+import br.com.joaogcm.jg.restaurante.caseiro.model.Perfil;
 
 public class ClienteDAO {
 
@@ -34,7 +35,7 @@ public class ClienteDAO {
 			ps.setString(3, cliente.getTelefone());
 			ps.setString(4, cliente.getCpf());
 			ps.setString(5, cliente.getSenha());
-			ps.setInt(6, cliente.getCodigoPerfil());
+			ps.setInt(6, cliente.getPerfil().getCodigo());
 
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -59,7 +60,7 @@ public class ClienteDAO {
 			ps.setString(3, cliente.getTelefone());
 			ps.setString(4, cliente.getCpf());
 			ps.setString(5, cliente.getSenha());
-			ps.setInt(6, cliente.getCodigoPerfil());
+			ps.setInt(6, cliente.getPerfil().getCodigo());
 			ps.setInt(7, cliente.getCodigo());
 
 			ps.executeUpdate();
@@ -109,7 +110,11 @@ public class ClienteDAO {
 				cliente.setNome(rs.getString("NOME"));
 				cliente.setEmail(rs.getString("EMAIL"));
 				cliente.setTelefone(rs.getString("TELEFONE"));
-				cliente.setCodigoPerfil(rs.getInt("PERFIL_ID"));
+
+				Perfil perfil = new Perfil();
+				cliente.setPerfil(perfil);
+
+				cliente.getPerfil().setCodigo(rs.getInt("PERFIL_ID"));
 
 				clientes.add(cliente);
 			}
@@ -143,7 +148,11 @@ public class ClienteDAO {
 				cliente.setEmail(rs.getString("EMAIL"));
 				cliente.setTelefone(rs.getString("TELEFONE"));
 				cliente.setCpf(rs.getString("CPF"));
-				cliente.setCodigoPerfil(rs.getInt("PERFIL_ID"));
+
+				Perfil perfil = new Perfil();
+				cliente.setPerfil(perfil);
+
+				cliente.getPerfil().setCodigo(rs.getInt("PERFIL_ID"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
