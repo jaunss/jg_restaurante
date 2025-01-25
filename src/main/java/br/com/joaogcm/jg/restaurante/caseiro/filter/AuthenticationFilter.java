@@ -1,6 +1,7 @@
 package br.com.joaogcm.jg.restaurante.caseiro.filter;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -15,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
+import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
+import br.com.joaogcm.jg.restaurante.caseiro.service.MenuService;
 
 public class AuthenticationFilter extends HttpFilter implements Filter {
 
@@ -42,47 +45,62 @@ public class AuthenticationFilter extends HttpFilter implements Filter {
 		String requestURI = req.getRequestURI();
 		String queryString = req.getQueryString();
 
-		boolean isExisteQueryString = false;
-		if (queryString != null) {
-			isExisteQueryString = true;
-		}
-
-		if (requestURI.equals(contextPath + "/Autenticacao")
-				|| (isExisteQueryString && queryString.equals("acao=autenticarCliente"))) {
-			chain.doFilter(request, response);
-			return;
-		}
+		List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+		req.setAttribute("menus", menus);
 
 		HttpSession sessaoCliente = req.getSession();
 		Cliente cliente = (Cliente) sessaoCliente.getAttribute("clienteComCadastro");
 
-		if (sessaoCliente != null && cliente != null) {
-			chain.doFilter(request, response);
-			return;
+		if (requestURI.equals(contextPath + "/")) {
+			if (sessaoCliente != null && cliente != null) {
+				redirecionarParaPagina(req, res, "/index.jsp",
+						"Olá " + cliente.getNome() + ", seja bem-vindo ao JG Restaurante :)", "sucesso");
+				return;
+			} else {
+				redirecionarParaPagina(req, res, "/index.jsp", "Seja bem-vindo ao JG Restaurante :)", "sucesso");
+				return;
+			}
 		} else {
-			boolean liberarAcesso = false;
-
-			for (String url : publicUrls) {
-				if (requestURI.endsWith(url.substring(contextPath.length()))) {
-					liberarAcesso = true;
-					break;
-				}
+			boolean isExisteQueryString = false;
+			if (queryString != null) {
+				isExisteQueryString = true;
 			}
 
-			// Adiciona verificação para arquivos estáticos, como CSS, JS, imagens, etc.
-			if (requestURI.endsWith(".css") || requestURI.endsWith(".js") || requestURI.endsWith(".png")
-					|| requestURI.endsWith(".jpg") || requestURI.endsWith(".jpeg") || requestURI.endsWith(".gif")
-					|| requestURI.endsWith(".woff") || requestURI.endsWith(".woff2") || requestURI.endsWith(".ttf")) {
-				liberarAcesso = true;
+			if (requestURI.equals(contextPath + "/Autenticacao")
+					|| (isExisteQueryString && queryString.equals("acao=autenticarCliente"))) {
+				chain.doFilter(request, response);
+				return;
 			}
 
-			if (liberarAcesso) {
+			if (sessaoCliente != null && cliente != null) {
 				chain.doFilter(request, response);
 				return;
 			} else {
-				redirecionarParaPagina(req, res, "/paginas/autenticacao/autenticar-login.jsp",
-						"Você não está logado, faça o login!", "perigo");
-				return;
+				boolean liberarAcesso = false;
+
+				for (String url : publicUrls) {
+					if (requestURI.endsWith(url.substring(contextPath.length()))) {
+						liberarAcesso = true;
+						break;
+					}
+				}
+
+				// Adiciona verificação para arquivos estáticos, como CSS, JS, imagens, etc.
+				if (requestURI.endsWith(".css") || requestURI.endsWith(".js") || requestURI.endsWith(".png")
+						|| requestURI.endsWith(".jpg") || requestURI.endsWith(".jpeg") || requestURI.endsWith(".gif")
+						|| requestURI.endsWith(".woff") || requestURI.endsWith(".woff2")
+						|| requestURI.endsWith(".ttf")) {
+					liberarAcesso = true;
+				}
+
+				if (liberarAcesso) {
+					chain.doFilter(request, response);
+					return;
+				} else {
+					redirecionarParaPagina(req, res, "/paginas/autenticacao/autenticar-login.jsp",
+							"Você não está logado, faça o login!", "perigo");
+					return;
+				}
 			}
 		}
 	}

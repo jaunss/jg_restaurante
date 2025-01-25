@@ -1,6 +1,7 @@
 package br.com.joaogcm.jg.restaurante.caseiro.servlet;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
@@ -12,8 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
+import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Perfil;
 import br.com.joaogcm.jg.restaurante.caseiro.service.ClienteService;
+import br.com.joaogcm.jg.restaurante.caseiro.service.MenuService;
 import br.com.joaogcm.jg.restaurante.caseiro.service.PerfilService;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
@@ -27,8 +30,10 @@ public class ClienteServlet extends HttpServlet {
 
 	private Cliente cliente = null;
 	private Perfil perfil = null;
+
 	private ClienteService clienteService = null;
 	private PerfilService perfilService = null;
+	private MenuService menuService = null;
 
 	public ClienteServlet() {
 		super();
@@ -46,6 +51,10 @@ public class ClienteServlet extends HttpServlet {
 
 			clienteService = new ClienteService();
 			perfilService = new PerfilService();
+			menuService = new MenuService();
+
+			List<Menu> menus = menuService.listarTodasUrlsSubMenu();
+			request.setAttribute("menus", menus);
 
 			if (acao.equalsIgnoreCase("listarCliente")) {
 				HttpSession sessaoCliente = request.getSession(false);
@@ -132,6 +141,9 @@ public class ClienteServlet extends HttpServlet {
 
 			clienteService = new ClienteService();
 			perfilService = new PerfilService();
+
+			List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+			request.setAttribute("menus", menus);
 
 			String codigo = request.getParameter("codigo");
 			String nome = request.getParameter("nome");

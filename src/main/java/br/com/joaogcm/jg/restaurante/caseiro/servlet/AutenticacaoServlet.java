@@ -1,6 +1,7 @@
 package br.com.joaogcm.jg.restaurante.caseiro.servlet;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
@@ -13,7 +14,9 @@ import javax.servlet.http.HttpSession;
 
 import br.com.joaogcm.jg.restaurante.caseiro.argon.ArgonUtil;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
+import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
 import br.com.joaogcm.jg.restaurante.caseiro.service.AutenticacaoService;
+import br.com.joaogcm.jg.restaurante.caseiro.service.MenuService;
 
 @WebServlet(name = "Autenticacao", urlPatterns = { "/Autenticacao" })
 public class AutenticacaoServlet extends HttpServlet {
@@ -23,7 +26,9 @@ public class AutenticacaoServlet extends HttpServlet {
 	private static final Logger logger = Logger.getLogger(AutenticacaoServlet.class.getName());
 
 	private Cliente cliente = null;
+
 	private AutenticacaoService autenticacaoService = null;
+	private MenuService menuService = null;
 
 	public AutenticacaoServlet() {
 		super();
@@ -40,10 +45,14 @@ public class AutenticacaoServlet extends HttpServlet {
 			cliente = new Cliente();
 
 			autenticacaoService = new AutenticacaoService();
+			menuService = new MenuService();
+
+			List<Menu> menus = menuService.listarTodasUrlsSubMenu();
+			request.setAttribute("menus", menus);
 
 			if (acao.equalsIgnoreCase("autenticarCliente")) {
 				redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
-						"Insira os dados para autenticar!", "sucesso");
+						"Insira os dados para autenticar!", "perigo");
 			} else if (acao.equalsIgnoreCase("deslogarCliente")) {
 				HttpSession deslogarClienteDaSessao = request.getSession(false);
 				Cliente cliente = (Cliente) deslogarClienteDaSessao.getAttribute("clienteComCadastro");
@@ -61,6 +70,9 @@ public class AutenticacaoServlet extends HttpServlet {
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação de autenticação: " + e.getMessage());
 
+			List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+			request.setAttribute("menus", menus);
+
 			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação de autenticação!",
 					"erro");
 		}
@@ -72,6 +84,9 @@ public class AutenticacaoServlet extends HttpServlet {
 			cliente = new Cliente();
 
 			autenticacaoService = new AutenticacaoService();
+
+			List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+			request.setAttribute("menus", menus);
 
 			String email = request.getParameter("email");
 			String senha = request.getParameter("senha");
@@ -87,8 +102,8 @@ public class AutenticacaoServlet extends HttpServlet {
 					sessaoUsuario.setAttribute("clienteComCadastro", clienteComCadastro);
 					sessaoUsuario.setMaxInactiveInterval(1800);
 
-					redirecionarParaPagina(request, response, "/index.jsp", "Seja bem-vindo ao JG Restaurante!",
-							"sucesso");
+					redirecionarParaPagina(request, response, "/index.jsp",
+							"Olá " + clienteComCadastro.getNome() + ", seja bem-vindo ao JG Restaurante :)", "sucesso");
 				} else {
 					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
 							"Email e/ou Senha incorretos!", "perigo");

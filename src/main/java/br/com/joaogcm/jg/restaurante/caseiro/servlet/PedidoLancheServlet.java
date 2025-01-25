@@ -1,6 +1,7 @@
 package br.com.joaogcm.jg.restaurante.caseiro.servlet;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
@@ -11,8 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import br.com.joaogcm.jg.restaurante.caseiro.model.Lanche;
+import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Pedido;
 import br.com.joaogcm.jg.restaurante.caseiro.service.LancheService;
+import br.com.joaogcm.jg.restaurante.caseiro.service.MenuService;
 import br.com.joaogcm.jg.restaurante.caseiro.service.PedidoService;
 
 @WebServlet(name = "PedidoLanche", urlPatterns = { "/PedidoLanche" })
@@ -46,6 +49,9 @@ public class PedidoLancheServlet extends HttpServlet {
 			pedidoService = new PedidoService();
 			lancheService = new LancheService();
 
+			List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+			request.setAttribute("menus", menus);
+
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação do pedido e/ou lanche: " + e.getMessage());
 
@@ -62,6 +68,9 @@ public class PedidoLancheServlet extends HttpServlet {
 
 			pedidoService = new PedidoService();
 			lancheService = new LancheService();
+
+			List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+			request.setAttribute("menus", menus);
 
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação do pedido e/ou lanche: " + e.getMessage());

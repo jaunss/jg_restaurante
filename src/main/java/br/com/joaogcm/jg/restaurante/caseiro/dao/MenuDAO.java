@@ -4,49 +4,45 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.joaogcm.jg.restaurante.caseiro.configuration.connection.ConfiguraConexaoBancoDeDados;
-import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
-import br.com.joaogcm.jg.restaurante.caseiro.model.Perfil;
+import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
 
-public class AutenticacaoDAO {
+public class MenuDAO {
 
 	private StringBuilder sb = null;
 	private PreparedStatement ps = null;
 	private ResultSet rs = null;
 	private Connection conn = null;
 
-	public AutenticacaoDAO() {
-
+	public MenuDAO() {
+		
 	}
 
-	public Cliente autenticarClientePorEmailESenha(String email) {
-		Cliente cliente = null;
+	public List<Menu> listarTodasUrlsSubMenu() {
+		List<Menu> menus = new ArrayList<Menu>();
 
 		try {
 			sb = new StringBuilder();
-			sb.append("SELECT * FROM cliente WHERE email = ?");
+			sb.append("SELECT * FROM menu WHERE codigo IN (1, 4, 8, 12) ORDER BY codigo");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
 			ps = conn.prepareStatement(sb.toString());
-			ps.setString(1, email);
 
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				cliente = new Cliente();
-				cliente.setCodigo(rs.getInt("CODIGO"));
-				cliente.setNome(rs.getString("NOME"));
-				cliente.setEmail(rs.getString("EMAIL"));
-				cliente.setTelefone(rs.getString("TELEFONE"));
-				cliente.setCpf(rs.getString("CPF"));
-				cliente.setSenha(rs.getString("SENHA"));
+				Menu menu = new Menu();
+				menu.setCodigo(rs.getInt("CODIGO"));
+				menu.setUrl(rs.getString("URL"));
+				menu.setAcao(rs.getString("ACAO"));
+				menu.setNome(rs.getString("NOME"));
+				menu.setExibir(rs.getInt("EXIBIR"));
 
-				Perfil perfil = new Perfil();
-				cliente.setPerfil(perfil);
-
-				cliente.getPerfil().setCodigo(rs.getInt("PERFIL_ID"));
+				menus.add(menu);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -56,6 +52,6 @@ public class AutenticacaoDAO {
 			ConfiguraConexaoBancoDeDados.fecharRS(rs);
 		}
 
-		return cliente;
+		return menus;
 	}
 }

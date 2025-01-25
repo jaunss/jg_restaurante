@@ -1,6 +1,7 @@
 package br.com.joaogcm.jg.restaurante.caseiro.servlet;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
@@ -9,6 +10,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
+import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
+import br.com.joaogcm.jg.restaurante.caseiro.service.MenuService;
 
 @WebServlet(name = "Home", urlPatterns = { "/Home" })
 public class HomeServlet extends HttpServlet {
@@ -16,6 +22,8 @@ public class HomeServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger logger = Logger.getLogger(AutenticacaoServlet.class.getName());
+
+	private MenuService menuService = null;
 
 	public HomeServlet() {
 		super();
@@ -29,8 +37,22 @@ public class HomeServlet extends HttpServlet {
 		request.setAttribute("acao", acao);
 
 		try {
+			menuService = new MenuService();
+
+			List<Menu> menus = menuService.listarTodasUrlsSubMenu();
+			request.setAttribute("menus", menus);
+
 			if (acao.equalsIgnoreCase("home")) {
-				redirecionarParaPagina(request, response, "/index.jsp", "Bem-vindo ao JG Restaurante :)", "sucesso");
+				HttpSession sessaoCliente = request.getSession(false);
+				Cliente cliente = (Cliente) sessaoCliente.getAttribute("clienteComCadastro");
+
+				if (sessaoCliente != null && cliente != null) {
+					redirecionarParaPagina(request, response, "/index.jsp",
+							"Olá " + cliente.getNome() + ", seja bem-vindo ao JG Restaurante :)", "sucesso");
+				} else {
+					redirecionarParaPagina(request, response, "/index.jsp", "Seja bem-vindo ao JG Restaurante :)",
+							"sucesso");
+				}
 			}
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação da home: " + e.getMessage());
@@ -43,6 +65,8 @@ public class HomeServlet extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 
+			List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+			request.setAttribute("menus", menus);
 		} catch (Exception e) {
 			e.printStackTrace();
 

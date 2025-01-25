@@ -96,7 +96,7 @@ public class ClienteDAO {
 
 		try {
 			sb = new StringBuilder();
-			sb.append("SELECT * FROM cliente");
+			sb.append("SELECT c.* FROM cliente c, perfil p WHERE c.perfil_id = p.codigo");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
@@ -132,7 +132,7 @@ public class ClienteDAO {
 	public Cliente buscarClientePorCodigo(Cliente cliente) {
 		try {
 			sb = new StringBuilder();
-			sb.append("SELECT * FROM cliente WHERE codigo = ?");
+			sb.append("SELECT c.* FROM cliente c, perfil p WHERE c.perfil_id = p.codigo AND c.codigo = ?");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 

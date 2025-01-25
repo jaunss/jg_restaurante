@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -15,8 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import br.com.joaogcm.jg.restaurante.caseiro.model.Lanche;
+import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Pedido;
 import br.com.joaogcm.jg.restaurante.caseiro.service.LancheService;
+import br.com.joaogcm.jg.restaurante.caseiro.service.MenuService;
 import br.com.joaogcm.jg.restaurante.caseiro.service.PedidoLancheService;
 import br.com.joaogcm.jg.restaurante.caseiro.service.PedidoService;
 
@@ -33,6 +36,7 @@ public class PedidoServlet extends HttpServlet {
 	private PedidoService pedidoService = null;
 	private LancheService lancheService = null;
 	private PedidoLancheService pedidoLancheService = null;
+	private MenuService menuService = null;
 
 	public PedidoServlet() {
 		super();
@@ -47,9 +51,13 @@ public class PedidoServlet extends HttpServlet {
 
 		try {
 			pedido = new Pedido();
-			
+
 			pedidoService = new PedidoService();
 			lancheService = new LancheService();
+			menuService = new MenuService();
+
+			List<Menu> menus = menuService.listarTodasUrlsSubMenu();
+			request.setAttribute("menus", menus);
 
 			if (acao.equalsIgnoreCase("listarPedido")) {
 				request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
@@ -112,6 +120,9 @@ public class PedidoServlet extends HttpServlet {
 
 			pedidoService = new PedidoService();
 			pedidoLancheService = new PedidoLancheService();
+
+			List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+			request.setAttribute("menus", menus);
 
 			String codigo = request.getParameter("codigo");
 			String dataPedido = request.getParameter("dataPedido");

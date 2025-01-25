@@ -2,6 +2,7 @@ package br.com.joaogcm.jg.restaurante.caseiro.servlet;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
@@ -12,7 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import br.com.joaogcm.jg.restaurante.caseiro.model.Lanche;
+import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
 import br.com.joaogcm.jg.restaurante.caseiro.service.LancheService;
+import br.com.joaogcm.jg.restaurante.caseiro.service.MenuService;
 
 @WebServlet(name = "Lanche", urlPatterns = { "/Lanche" })
 public class LancheServlet extends HttpServlet {
@@ -22,7 +25,9 @@ public class LancheServlet extends HttpServlet {
 	private static final Logger logger = Logger.getLogger(AutenticacaoServlet.class.getName());
 
 	private Lanche lanche = null;
+
 	private LancheService lancheService = null;
+	private MenuService menuService = null;
 
 	public LancheServlet() {
 		super();
@@ -37,8 +42,12 @@ public class LancheServlet extends HttpServlet {
 
 		try {
 			lanche = new Lanche();
-			
+
 			lancheService = new LancheService();
+			menuService = new MenuService();
+
+			List<Menu> menus = menuService.listarTodasUrlsSubMenu();
+			request.setAttribute("menus", menus);
 
 			if (acao.equalsIgnoreCase("listarLanche")) {
 				request.setAttribute("lanches", lancheService.buscarTodosLanches());
@@ -95,8 +104,11 @@ public class LancheServlet extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			lanche = new Lanche();
-			
+
 			lancheService = new LancheService();
+
+			List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+			request.setAttribute("menus", menus);
 
 			String codigo = request.getParameter("codigo");
 			String nome = request.getParameter("nome");
