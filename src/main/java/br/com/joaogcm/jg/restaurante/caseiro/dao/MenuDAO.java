@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import br.com.joaogcm.jg.restaurante.caseiro.configuration.connection.ConfiguraConexaoBancoDeDados;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
@@ -18,15 +18,15 @@ public class MenuDAO {
 	private Connection conn = null;
 
 	public MenuDAO() {
-		
+
 	}
 
-	public List<Menu> listarTodasUrlsSubMenu() {
-		List<Menu> menus = new ArrayList<Menu>();
+	public Set<Menu> listarTodasUrlsSubMenu() {
+		Set<Menu> menus = new LinkedHashSet<Menu>();
 
 		try {
 			sb = new StringBuilder();
-			sb.append("SELECT * FROM menu WHERE codigo IN (1, 4, 8, 12) ORDER BY codigo");
+			sb.append("SELECT * FROM menu WHERE codigo IN (1, 4, 8, 12) ORDER BY codigo ASC");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
@@ -40,7 +40,7 @@ public class MenuDAO {
 				menu.setUrl(rs.getString("URL"));
 				menu.setAcao(rs.getString("ACAO"));
 				menu.setNome(rs.getString("NOME"));
-				menu.setExibir(rs.getInt("EXIBIR"));
+				menu.setIcone(rs.getString("ICONE"));
 
 				menus.add(menu);
 			}

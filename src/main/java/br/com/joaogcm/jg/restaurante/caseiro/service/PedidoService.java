@@ -3,6 +3,7 @@ package br.com.joaogcm.jg.restaurante.caseiro.service;
 import java.util.Set;
 
 import br.com.joaogcm.jg.restaurante.caseiro.dao.PedidoDAO;
+import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Pedido;
 
 public class PedidoService {
@@ -25,5 +26,9 @@ public class PedidoService {
 
 	public Pedido buscarPedidoPorCodigo(Pedido pedido) {
 		return new PedidoDAO().buscarPedidoPorCodigo(pedido);
+	}
+
+	public Set<Pedido> buscarPedidoPorCliente(Cliente cliente) {
+		return new PedidoDAO().buscarPedidoPorCliente(cliente);
 	}
 }

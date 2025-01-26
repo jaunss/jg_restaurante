@@ -9,7 +9,7 @@ public class Menu {
 	private String url;
 	private String acao;
 	private String nome;
-	private Integer exibir;
+	private String icone;
 	private Set<Perfil> perfis = new HashSet<Perfil>();
 
 	public Menu() {
@@ -48,12 +48,12 @@ public class Menu {
 		this.nome = nome;
 	}
 
-	public Integer getExibir() {
-		return exibir;
+	public String getIcone() {
+		return icone;
 	}
 
-	public void setExibir(Integer exibir) {
-		this.exibir = exibir;
+	public void setIcone(String icone) {
+		this.icone = icone;
 	}
 
 	public Set<Perfil> getPerfis() {

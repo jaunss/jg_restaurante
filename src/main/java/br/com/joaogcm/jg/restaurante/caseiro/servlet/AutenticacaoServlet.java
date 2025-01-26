@@ -1,7 +1,7 @@
 package br.com.joaogcm.jg.restaurante.caseiro.servlet;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
@@ -47,18 +47,18 @@ public class AutenticacaoServlet extends HttpServlet {
 			autenticacaoService = new AutenticacaoService();
 			menuService = new MenuService();
 
-			List<Menu> menus = menuService.listarTodasUrlsSubMenu();
+			HttpSession sessaoCliente = request.getSession(false);
+			Cliente cliente = (Cliente) sessaoCliente.getAttribute("clienteComCadastro");
+
+			Set<Menu> menus = menuService.listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
 			if (acao.equalsIgnoreCase("autenticarCliente")) {
 				redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
 						"Insira os dados para autenticar!", "perigo");
 			} else if (acao.equalsIgnoreCase("deslogarCliente")) {
-				HttpSession deslogarClienteDaSessao = request.getSession(false);
-				Cliente cliente = (Cliente) deslogarClienteDaSessao.getAttribute("clienteComCadastro");
-
-				if (deslogarClienteDaSessao != null && cliente != null) {
-					deslogarClienteDaSessao.invalidate();
+				if (sessaoCliente != null && cliente != null) {
+					sessaoCliente.invalidate();
 
 					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
 							"Já vai? :( Um até logo e retorne novamente :)", "perigo");
@@ -69,9 +69,6 @@ public class AutenticacaoServlet extends HttpServlet {
 			}
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação de autenticação: " + e.getMessage());
-
-			List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
-			request.setAttribute("menus", menus);
 
 			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação de autenticação!",
 					"erro");
@@ -85,7 +82,7 @@ public class AutenticacaoServlet extends HttpServlet {
 
 			autenticacaoService = new AutenticacaoService();
 
-			List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+			Set<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
 			String email = request.getParameter("email");

@@ -1,7 +1,7 @@
 package br.com.joaogcm.jg.restaurante.caseiro.filter;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -38,14 +38,19 @@ public class AuthenticationFilter extends HttpFilter implements Filter {
 
 		String contextPath = req.getContextPath();
 
-		String[] publicUrls = { contextPath + "/", contextPath + "/index.jsp", contextPath + "/error.jsp",
-				contextPath + "/Home", contextPath + "/Autenticacao", contextPath + "/Cliente",
-				contextPath + "/Lanche" };
+		String[] publicUrls = { 
+				contextPath + "/",
+				contextPath + "/Home",
+				contextPath + "/Pedido",
+				contextPath + "/Lanche",
+				contextPath + "/Cliente",
+				contextPath + "/Autenticacao"
+				};
 
 		String requestURI = req.getRequestURI();
 		String queryString = req.getQueryString();
 
-		List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+		Set<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
 		req.setAttribute("menus", menus);
 
 		HttpSession sessaoCliente = req.getSession();

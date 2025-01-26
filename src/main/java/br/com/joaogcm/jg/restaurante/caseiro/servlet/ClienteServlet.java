@@ -1,7 +1,7 @@
 package br.com.joaogcm.jg.restaurante.caseiro.servlet;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
@@ -53,13 +53,13 @@ public class ClienteServlet extends HttpServlet {
 			perfilService = new PerfilService();
 			menuService = new MenuService();
 
-			List<Menu> menus = menuService.listarTodasUrlsSubMenu();
+			HttpSession sessaoCliente = request.getSession(false);
+			Cliente cliente = (Cliente) sessaoCliente.getAttribute("clienteComCadastro");
+
+			Set<Menu> menus = menuService.listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
 			if (acao.equalsIgnoreCase("listarCliente")) {
-				HttpSession sessaoCliente = request.getSession(false);
-				Cliente cliente = (Cliente) sessaoCliente.getAttribute("clienteComCadastro");
-
 				if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
 						&& cliente.getPerfil().getCodigo() == 1) {
 					Cliente newCliente = clienteService.buscarClientePorCodigo(cliente);
@@ -75,54 +75,62 @@ public class ClienteServlet extends HttpServlet {
 							"Você não está logado, faça o login!", "perigo");
 				}
 			} else if (acao.equalsIgnoreCase("cadastrarCliente")) {
-				HttpSession sessaoCliente = request.getSession(false);
-				Cliente cliente = (Cliente) sessaoCliente.getAttribute("clienteComCadastro");
-
 				if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
 						&& cliente.getPerfil().getCodigo() == 1) {
 					redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null, null);
 				} else if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
 						&& cliente.getPerfil().getCodigo() == 2) {
+					/* Lista os perfis do cliente se o perfil do cliente for administrador */
 					request.setAttribute("perfis", perfilService.buscarPerfilPorCodigo(cliente.getPerfil()));
 					redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null, null);
 				} else {
 					redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null, null);
 				}
 			} else if (acao.equalsIgnoreCase("editarCliente")) {
-				String codigo = request.getParameter("codigo");
-				Integer codigoC = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
+				if (sessaoCliente != null && cliente != null) {
+					String codigo = request.getParameter("codigo");
+					Integer codigoC = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
 
-				cliente.setCodigo(codigoC);
+					cliente.setCodigo(codigoC);
 
-				cliente = clienteService.buscarClientePorCodigo(cliente);
+					cliente = clienteService.buscarClientePorCodigo(cliente);
 
-				if (cliente.getCodigo() != null) {
-					request.setAttribute("cliente", cliente);
-					redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp",
-							"Edite o cliente!", "sucesso");
+					if (cliente.getCodigo() != null) {
+						request.setAttribute("cliente", cliente);
+						redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp",
+								"Edite o cliente!", "sucesso");
+					} else {
+						request.setAttribute("clientes", clienteService.buscarTodosClientes());
+						redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
+								"Cliente não encontrado!", "perigo");
+					}
 				} else {
-					request.setAttribute("clientes", clienteService.buscarTodosClientes());
-					redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
-							"Cliente não encontrado!", "perigo");
+					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+							"Você não está logado, faça o login!", "perigo");
 				}
 			} else if (acao.equalsIgnoreCase("removerCliente")) {
-				String codigo = request.getParameter("codigo");
-				Integer codigoC = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
+				if (sessaoCliente != null && cliente != null) {
+					String codigo = request.getParameter("codigo");
+					Integer codigoC = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
 
-				cliente.setCodigo(codigoC);
+					cliente.setCodigo(codigoC);
 
-				cliente = clienteService.buscarClientePorCodigo(cliente);
+					cliente = clienteService.buscarClientePorCodigo(cliente);
 
-				if (cliente.getCodigo() != null) {
-					clienteService.removerClientePorCodigo(cliente);
+					if (cliente.getCodigo() != null) {
+						clienteService.removerClientePorCodigo(cliente);
 
-					request.setAttribute("clientes", clienteService.buscarTodosClientes());
-					redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
-							"Cliente removido com sucesso!", "sucesso");
+						request.setAttribute("clientes", clienteService.buscarTodosClientes());
+						redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
+								"Cliente removido com sucesso!", "sucesso");
+					} else {
+						request.setAttribute("clientes", clienteService.buscarTodosClientes());
+						redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
+								"Não foi possível remover o cliente!", "perigo");
+					}
 				} else {
-					request.setAttribute("clientes", clienteService.buscarTodosClientes());
-					redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
-							"Não foi possível remover o cliente!", "perigo");
+					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+							"Você não está logado, faça o login!", "perigo");
 				}
 			}
 		} catch (Exception e) {
@@ -142,7 +150,7 @@ public class ClienteServlet extends HttpServlet {
 			clienteService = new ClienteService();
 			perfilService = new PerfilService();
 
-			List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+			Set<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
 			String codigo = request.getParameter("codigo");

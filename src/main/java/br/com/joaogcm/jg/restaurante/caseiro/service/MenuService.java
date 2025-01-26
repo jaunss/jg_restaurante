@@ -1,13 +1,13 @@
 package br.com.joaogcm.jg.restaurante.caseiro.service;
 
-import java.util.List;
+import java.util.Set;
 
 import br.com.joaogcm.jg.restaurante.caseiro.dao.MenuDAO;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
 
 public class MenuService {
 
-	public List<Menu> listarTodasUrlsSubMenu() {
+	public Set<Menu> listarTodasUrlsSubMenu() {
 		return new MenuDAO().listarTodasUrlsSubMenu();
 	}
 }

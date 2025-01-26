@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import br.com.joaogcm.jg.restaurante.caseiro.configuration.connection.ConfiguraConexaoBancoDeDados;
@@ -92,11 +92,12 @@ public class ClienteDAO {
 	}
 
 	public Set<Cliente> buscarTodosClientes() {
-		Set<Cliente> clientes = new HashSet<Cliente>();
+		Set<Cliente> clientes = new LinkedHashSet<Cliente>();
 
 		try {
 			sb = new StringBuilder();
-			sb.append("SELECT c.* FROM cliente c, perfil p WHERE c.perfil_id = p.codigo");
+			sb.append("SELECT c.* FROM cliente c, perfil p ");
+			sb.append("WHERE c.perfil_id = p.codigo ORDER BY UPPER(c.nome) ASC");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
@@ -110,6 +111,7 @@ public class ClienteDAO {
 				cliente.setNome(rs.getString("NOME"));
 				cliente.setEmail(rs.getString("EMAIL"));
 				cliente.setTelefone(rs.getString("TELEFONE"));
+				cliente.setCpf(rs.getString("CPF"));
 
 				Perfil perfil = new Perfil();
 				cliente.setPerfil(perfil);
@@ -132,7 +134,9 @@ public class ClienteDAO {
 	public Cliente buscarClientePorCodigo(Cliente cliente) {
 		try {
 			sb = new StringBuilder();
-			sb.append("SELECT c.* FROM cliente c, perfil p WHERE c.perfil_id = p.codigo AND c.codigo = ?");
+			sb.append("SELECT c.* FROM cliente c, perfil p ");
+			sb.append("WHERE c.perfil_id = p.codigo ");
+			sb.append("AND c.codigo = ?");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 

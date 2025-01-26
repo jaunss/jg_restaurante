@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -14,7 +13,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Lanche;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Pedido;
@@ -56,50 +57,84 @@ public class PedidoServlet extends HttpServlet {
 			lancheService = new LancheService();
 			menuService = new MenuService();
 
-			List<Menu> menus = menuService.listarTodasUrlsSubMenu();
+			HttpSession sessaoCliente = request.getSession(false);
+			Cliente cliente = (Cliente) sessaoCliente.getAttribute("clienteComCadastro");
+
+			Set<Menu> menus = menuService.listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
 			if (acao.equalsIgnoreCase("listarPedido")) {
-				request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
-				redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp", null, null);
-			} else if (acao.equalsIgnoreCase("cadastrarPedido")) {
-				request.setAttribute("lanches", lancheService.buscarTodosLanches());
-				redirecionarParaPagina(request, response, "/paginas/pedido/cadastrar-pedido.jsp", null, null);
-			} else if (acao.equalsIgnoreCase("editarPedido")) {
-				String codigo = request.getParameter("codigo");
-				Integer codigoP = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
+				if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
+						&& cliente.getPerfil().getCodigo() == 1) {
+					Set<Pedido> pedidos = pedidoService.buscarPedidoPorCliente(cliente);
 
-				pedido.setCodigo(codigoP);
+					request.setAttribute("pedidos", pedidos);
+					redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp", null, null);
+				} else if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
+						&& cliente.getPerfil().getCodigo() == 2) {
+					Set<Pedido> pedidos = pedidoService.buscarTodosPedidos();
 
-				pedido = pedidoService.buscarPedidoPorCodigo(pedido);
-
-				if (pedido.getCodigo() != null) {
-					request.setAttribute("pedido", pedido);
-					redirecionarParaPagina(request, response, "/paginas/pedido/cadastrar-pedido.jsp", "Edite o pedido!",
-							"sucesso");
+					request.setAttribute("pedidos", pedidos);
+					redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp", null, null);
 				} else {
-					request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
-					redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp",
-							"Pedido não encontrado!", "perigo");
+					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+							"Você não está logado, faça o login!", "perigo");
+				}
+			} else if (acao.equalsIgnoreCase("cadastrarPedido")) {
+				if (sessaoCliente != null && cliente != null) {
+					request.setAttribute("cliente", cliente);
+
+					request.setAttribute("lanches", lancheService.buscarTodosLanches());
+					redirecionarParaPagina(request, response, "/paginas/pedido/cadastrar-pedido.jsp", null, null);
+				} else {
+					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+							"Você não está logado, faça o login!", "perigo");
+				}
+			} else if (acao.equalsIgnoreCase("editarPedido")) {
+				if (sessaoCliente != null && cliente != null) {
+					String codigo = request.getParameter("codigo");
+					Integer codigoP = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
+
+					pedido.setCodigo(codigoP);
+
+					pedido = pedidoService.buscarPedidoPorCodigo(pedido);
+
+					if (pedido.getCodigo() != null) {
+						request.setAttribute("pedido", pedido);
+						redirecionarParaPagina(request, response, "/paginas/pedido/cadastrar-pedido.jsp",
+								"Edite o pedido!", "sucesso");
+					} else {
+						request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
+						redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp",
+								"Pedido não encontrado!", "perigo");
+					}
+				} else {
+					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+							"Você não está logado, faça o login!", "perigo");
 				}
 			} else if (acao.equalsIgnoreCase("removerPedido")) {
-				String codigo = request.getParameter("codigo");
-				Integer codigoP = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
+				if (sessaoCliente != null && cliente != null) {
+					String codigo = request.getParameter("codigo");
+					Integer codigoP = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
 
-				pedido.setCodigo(codigoP);
+					pedido.setCodigo(codigoP);
 
-				pedido = pedidoService.buscarPedidoPorCodigo(pedido);
+					pedido = pedidoService.buscarPedidoPorCodigo(pedido);
 
-				if (pedido.getCodigo() != null) {
-					pedidoService.removerPedidoPorCodigo(pedido);
+					if (pedido.getCodigo() != null) {
+						pedidoService.removerPedidoPorCodigo(pedido);
 
-					request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
-					redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp",
-							"Pedido removido com sucesso!", "sucesso");
+						request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
+						redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp",
+								"Pedido removido com sucesso!", "sucesso");
+					} else {
+						request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
+						redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp",
+								"Não foi possível remover o pedido!", "perigo");
+					}
 				} else {
-					request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
-					redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp",
-							"Não foi possível remover o pedido!", "perigo");
+					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+							"Você não está logado, faça o login!", "perigo");
 				}
 			}
 		} catch (Exception e) {
@@ -121,7 +156,7 @@ public class PedidoServlet extends HttpServlet {
 			pedidoService = new PedidoService();
 			pedidoLancheService = new PedidoLancheService();
 
-			List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+			Set<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
 			String codigo = request.getParameter("codigo");

@@ -1,7 +1,7 @@
 package br.com.joaogcm.jg.restaurante.caseiro.servlet;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
@@ -49,7 +49,7 @@ public class PedidoLancheServlet extends HttpServlet {
 			pedidoService = new PedidoService();
 			lancheService = new LancheService();
 
-			List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+			Set<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
 		} catch (Exception e) {
@@ -69,7 +69,7 @@ public class PedidoLancheServlet extends HttpServlet {
 			pedidoService = new PedidoService();
 			lancheService = new LancheService();
 
-			List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+			Set<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
 		} catch (Exception e) {

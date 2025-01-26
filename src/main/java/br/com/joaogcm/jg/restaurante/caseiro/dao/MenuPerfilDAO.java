@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import br.com.joaogcm.jg.restaurante.caseiro.configuration.connection.ConfiguraConexaoBancoDeDados;
@@ -23,14 +23,15 @@ public class MenuPerfilDAO {
 	}
 
 	public Set<Menu> buscarTodosMenusPorCodigoDoPerfil(Perfil perfil) {
-		Set<Menu> menus = new HashSet<Menu>();
+		Set<Menu> menus = new LinkedHashSet<Menu>();
 
 		try {
 			sb = new StringBuilder();
 			sb.append("SELECT m.* FROM menu m, perfil p, menu_perfil mp ");
 			sb.append("WHERE mp.codigo_menu = m.codigo ");
 			sb.append("AND mp.codigo_perfil = p.codigo ");
-			sb.append("AND p.codigo = ?");
+			sb.append("AND p.codigo = ? ");
+			sb.append("ORDER BY UPPER(m.nome) ASC");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
@@ -45,7 +46,7 @@ public class MenuPerfilDAO {
 				menu.setUrl(rs.getString("URL"));
 				menu.setAcao(rs.getString("ACAO"));
 				menu.setNome(rs.getString("NOME"));
-				menu.setExibir(rs.getInt("EXIBIR"));
+				menu.setIcone(rs.getString("ICONE"));
 
 				menus.add(menu);
 			}

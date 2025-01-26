@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import br.com.joaogcm.jg.restaurante.caseiro.configuration.connection.ConfiguraConexaoBancoDeDados;
@@ -98,11 +98,11 @@ public class PedidoDAO {
 	}
 
 	public Set<Pedido> buscarTodosPedidos() {
-		Set<Pedido> pedidos = new HashSet<Pedido>();
+		Set<Pedido> pedidos = new LinkedHashSet<Pedido>();
 
 		try {
 			sb = new StringBuilder();
-			sb.append("SELECT * FROM pedido");
+			sb.append("SELECT * FROM pedido ORDER BY data_pedido ASC");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
@@ -168,5 +168,46 @@ public class PedidoDAO {
 		}
 
 		return pedido;
+	}
+
+	public Set<Pedido> buscarPedidoPorCliente(Cliente cliente) {
+		Set<Pedido> pedidos = new LinkedHashSet<Pedido>();
+
+		try {
+			sb = new StringBuilder();
+			sb.append("SELECT p.* FROM pedido p, cliente c ");
+			sb.append("WHERE p.cliente_id = c.codigo ");
+			sb.append("AND c.codigo = ? ");
+			sb.append("ORDER BY p.data_pedido ASC");
+
+			conn = new ConfiguraConexaoBancoDeDados().getConexao();
+
+			ps = conn.prepareStatement(sb.toString());
+			ps.setInt(1, cliente.getCodigo());
+
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				Pedido pedido = new Pedido();
+				pedido.setCodigo(rs.getInt("CODIGO"));
+				pedido.setDataPedido(rs.getTimestamp("DATA_PEDIDO").toLocalDateTime());
+
+				pedido.setCliente(cliente);
+				pedido.getCliente().setCodigo(rs.getInt("CLIENTE_ID"));
+
+				pedido.setTotal(rs.getBigDecimal("TOTAL"));
+				pedido.setObservacao(rs.getString("OBSERVACAO"));
+
+				pedidos.add(pedido);
+			}
+		} catch (SQLException e) {
+
+		} finally {
+			ConfiguraConexaoBancoDeDados.fecharConn(conn);
+			ConfiguraConexaoBancoDeDados.fecharPS(ps);
+			ConfiguraConexaoBancoDeDados.fecharRS(rs);
+		}
+
+		return pedidos;
 	}
 }

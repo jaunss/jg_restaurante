@@ -2,7 +2,7 @@ package br.com.joaogcm.jg.restaurante.caseiro.servlet;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
@@ -11,7 +11,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Lanche;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
 import br.com.joaogcm.jg.restaurante.caseiro.service.LancheService;
@@ -46,50 +48,70 @@ public class LancheServlet extends HttpServlet {
 			lancheService = new LancheService();
 			menuService = new MenuService();
 
-			List<Menu> menus = menuService.listarTodasUrlsSubMenu();
+			HttpSession sessaoCliente = request.getSession(false);
+			Cliente cliente = (Cliente) sessaoCliente.getAttribute("clienteComCadastro");
+
+			Set<Menu> menus = menuService.listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
 			if (acao.equalsIgnoreCase("listarLanche")) {
 				request.setAttribute("lanches", lancheService.buscarTodosLanches());
 				redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp", null, null);
 			} else if (acao.equalsIgnoreCase("cadastrarLanche")) {
-				redirecionarParaPagina(request, response, "/paginas/lanche/cadastrar-lanche.jsp", null, null);
-			} else if (acao.equalsIgnoreCase("editarLanche")) {
-				String codigo = request.getParameter("codigo");
-				Integer codigoL = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
-
-				lanche.setCodigo(codigoL);
-
-				lanche = lancheService.buscarLanchePorCodigo(lanche);
-
-				if (lanche.getCodigo() != null) {
-					request.setAttribute("lanche", lanche);
-					redirecionarParaPagina(request, response, "/paginas/lanche/cadastrar-lanche.jsp", "Edite o lanche!",
-							"sucesso");
+				if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
+						&& cliente.getPerfil().getCodigo() == 2) {
+					redirecionarParaPagina(request, response, "/paginas/lanche/cadastrar-lanche.jsp", null, null);
 				} else {
-					request.setAttribute("lanches", lancheService.buscarTodosLanches());
-					redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp",
-							"Lanche não encontrado!", "perigo");
+					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+							"Você não está logado e/ou não tem o perfil de administrador!", "perigo");
 				}
+			} else if (acao.equalsIgnoreCase("editarLanche")) {
+				if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
+						&& cliente.getPerfil().getCodigo() == 2) {
+					String codigo = request.getParameter("codigo");
+					Integer codigoL = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
 
-			} else if (acao.equalsIgnoreCase("removerLanche")) {
-				String codigo = request.getParameter("codigo");
-				Integer codigoL = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
+					lanche.setCodigo(codigoL);
 
-				lanche.setCodigo(codigoL);
+					lanche = lancheService.buscarLanchePorCodigo(lanche);
 
-				lanche = lancheService.buscarLanchePorCodigo(lanche);
-
-				if (lanche.getCodigo() != null) {
-					lancheService.removerLanchePorCodigo(lanche);
-
-					request.setAttribute("lanches", lancheService.buscarTodosLanches());
-					redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp",
-							"Lanche removido com sucesso!", "sucesso");
+					if (lanche.getCodigo() != null) {
+						request.setAttribute("lanche", lanche);
+						redirecionarParaPagina(request, response, "/paginas/lanche/cadastrar-lanche.jsp",
+								"Edite o lanche!", "sucesso");
+					} else {
+						request.setAttribute("lanches", lancheService.buscarTodosLanches());
+						redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp",
+								"Lanche não encontrado!", "perigo");
+					}
 				} else {
-					request.setAttribute("lanches", lancheService.buscarTodosLanches());
-					redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp",
-							"Não foi possível remover o lanche!", "perigo");
+					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+							"Você não está logado e/ou não tem o perfil de administrador!", "perigo");
+				}
+			} else if (acao.equalsIgnoreCase("removerLanche")) {
+				if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
+						&& cliente.getPerfil().getCodigo() == 2) {
+					String codigo = request.getParameter("codigo");
+					Integer codigoL = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
+
+					lanche.setCodigo(codigoL);
+
+					lanche = lancheService.buscarLanchePorCodigo(lanche);
+
+					if (lanche.getCodigo() != null) {
+						lancheService.removerLanchePorCodigo(lanche);
+
+						request.setAttribute("lanches", lancheService.buscarTodosLanches());
+						redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp",
+								"Lanche removido com sucesso!", "sucesso");
+					} else {
+						request.setAttribute("lanches", lancheService.buscarTodosLanches());
+						redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp",
+								"Não foi possível remover o lanche!", "perigo");
+					}
+				} else {
+					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+							"Você não está logado e/ou não tem o perfil de administrador!", "perigo");
 				}
 			}
 		} catch (Exception e) {
@@ -107,7 +129,7 @@ public class LancheServlet extends HttpServlet {
 
 			lancheService = new LancheService();
 
-			List<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
+			Set<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
 			String codigo = request.getParameter("codigo");

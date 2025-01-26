@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import br.com.joaogcm.jg.restaurante.caseiro.configuration.connection.ConfiguraConexaoBancoDeDados;
@@ -87,11 +87,11 @@ public class LancheDAO {
 	}
 
 	public Set<Lanche> buscarTodosLanches() {
-		Set<Lanche> lanches = new HashSet<Lanche>();
+		Set<Lanche> lanches = new LinkedHashSet<Lanche>();
 
 		try {
 			sb = new StringBuilder();
-			sb.append("SELECT * FROM lanche");
+			sb.append("SELECT * FROM lanche ORDER BY UPPER(nome) ASC");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 

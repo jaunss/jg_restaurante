@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import br.com.joaogcm.jg.restaurante.caseiro.configuration.connection.ConfiguraConexaoBancoDeDados;
@@ -63,22 +63,15 @@ public class PedidoLancheDAO {
 	}
 
 	public Set<Lanche> buscarTodosOsLanchesDeUmDeterminadoPedido(Pedido pedido) {
-		Set<Lanche> lanches = new HashSet<Lanche>();
+		Set<Lanche> lanches = new LinkedHashSet<Lanche>();
 
 		try {
 			sb = new StringBuilder();
-			sb.append("SELECT l.codigo AS CODIGO, ");
-			sb.append("l.nome AS NOME, ");
-			sb.append("l.descricao_conteudo AS DESCRICAO_CONTEUDO, ");
-			sb.append("l.preco AS PRECO ");
-
-			sb.append("FROM pedido_lanche pl, ");
-			sb.append("pedido p, ");
-			sb.append("lanche l ");
-
-			sb.append("WHERE pl.codigo_pedido = p.codigo ");
+			sb.append("SELECT l.* FROM lanche l, pedido p, pedido_lanche pl, ");
 			sb.append("AND pl.codigo_lanche = l.codigo ");
+			sb.append("WHERE pl.codigo_pedido = p.codigo ");
 			sb.append("AND p.codigo = ? ");
+			sb.append("ORDER BY UPPER(l.nome) ASC");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 

@@ -34,20 +34,23 @@
 					<c:forEach var="menu" items="${menus}">
 						<li class="nav-item"><a
 							class="nav-link ${acao == menu.acao ? 'active' : ''}"
-							href="${pageContext.request.contextPath}${menu.url}?acao=${menu.acao}">${menu.nome}</a></li>
+							href="${pageContext.request.contextPath}${menu.url}?acao=${menu.acao}"><i
+								class="${menu.icone}"></i> ${menu.nome}</a></li>
 					</c:forEach>
 
 					<c:choose>
 						<c:when test="${sessionScope.clienteComCadastro == null}">
 							<li class="nav-item"><a
-								class="nav-link ${acao == menu.acao ? 'active' : ''}"
-								href="${pageContext.request.contextPath}/Autenticacao?acao=autenticarCliente">Autenticar</a></li>
+								class="nav-link ${acao == 'autenticarCliente' ? 'active' : ''}"
+								href="${pageContext.request.contextPath}/Autenticacao?acao=autenticarCliente"><i
+									class="bi bi-box-arrow-in-right"></i> Autenticar</a></li>
 						</c:when>
 
 						<c:otherwise>
 							<li class="nav-item"><a
-								class="nav-link ${acao == menu.acao ? 'active' : ''}"
-								href="${pageContext.request.contextPath}/Autenticacao?acao=deslogarCliente">Sair</a></li>
+								class="nav-link ${acao == 'deslogarCliente' ? 'active' : ''}"
+								href="${pageContext.request.contextPath}/Autenticacao?acao=deslogarCliente"><i
+									class="bi bi-box-arrow-right"></i> Sair</a></li>
 						</c:otherwise>
 					</c:choose>
 				</ul>
@@ -121,6 +124,7 @@
 									<td>${cliente.nome}</td>
 									<td>${cliente.email}</td>
 									<td>${cliente.telefone}</td>
+									<td>${cliente.cpf}</td>
 									<td><a class="btn btn-primary btn-sm"
 										href="${pageContext.request.contextPath}/Cliente?acao=editarCliente&codigo=${cliente.codigo}"
 										title="Editar Cliente"><i class="bi bi-pencil-square"></i></a>
