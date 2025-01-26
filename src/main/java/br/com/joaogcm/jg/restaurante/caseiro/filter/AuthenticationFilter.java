@@ -49,12 +49,12 @@ public class AuthenticationFilter extends HttpFilter implements Filter {
 
 		String requestURI = req.getRequestURI();
 		String queryString = req.getQueryString();
+		
+		HttpSession sessaoCliente = req.getSession();
+		Cliente cliente = (Cliente) sessaoCliente.getAttribute("clienteComCadastro");
 
 		Set<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
 		req.setAttribute("menus", menus);
-
-		HttpSession sessaoCliente = req.getSession();
-		Cliente cliente = (Cliente) sessaoCliente.getAttribute("clienteComCadastro");
 
 		if (requestURI.equals(contextPath + "/")) {
 			if (sessaoCliente != null && cliente != null) {
