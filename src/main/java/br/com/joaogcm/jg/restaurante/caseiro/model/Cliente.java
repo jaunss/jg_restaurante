@@ -9,6 +9,7 @@ public class Cliente {
 	private String cpf;
 	private String senha;
 	private Perfil perfil;
+	private Endereco endereco;
 
 	public Cliente() {
 
@@ -68,5 +69,13 @@ public class Cliente {
 
 	public void setPerfil(Perfil perfil) {
 		this.perfil = perfil;
+	}
+
+	public Endereco getEndereco() {
+		return endereco;
+	}
+
+	public void setEndereco(Endereco endereco) {
+		this.endereco = endereco;
 	}
 }

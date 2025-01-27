@@ -21,6 +21,31 @@ public class PerfilDAO {
 
 	}
 
+	public void adicionarPerfil(Perfil perfil) {
+		try {
+			sb = new StringBuilder();
+			sb.append("INSERT INTO perfil (nome) VALUES (?)");
+			
+			conn = new ConfiguraConexaoBancoDeDados().getConexao();
+			
+			ps = conn.prepareStatement(sb.toString());
+			ps.setString(1, perfil.getNome());
+			
+			int linhasAfetadas = ps.executeUpdate();
+			
+			if (linhasAfetadas > 0) {
+				rs = ps.getGeneratedKeys();
+				
+				while (rs.next()) {
+					perfil.setCodigo(rs.getInt(1));
+				}
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public Set<Perfil> buscarTodosPerfis() {
 		Set<Perfil> perfis = new HashSet<Perfil>();
 

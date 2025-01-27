@@ -44,6 +44,7 @@ public class AuthenticationFilter extends HttpFilter implements Filter {
 				contextPath + "/Pedido",
 				contextPath + "/Lanche",
 				contextPath + "/Cliente",
+				contextPath + "/Endereco",
 				contextPath + "/Autenticacao"
 				};
 

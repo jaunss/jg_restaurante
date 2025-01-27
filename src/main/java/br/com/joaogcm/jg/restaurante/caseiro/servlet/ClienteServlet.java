@@ -144,9 +144,6 @@ public class ClienteServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			cliente = new Cliente();
-			perfil = new Perfil();
-
 			clienteService = new ClienteService();
 			perfilService = new PerfilService();
 
@@ -161,6 +158,7 @@ public class ClienteServlet extends HttpServlet {
 			String senha = request.getParameter("senha");
 			String perfil_id = request.getParameter("perfil.codigo");
 
+			cliente = new Cliente();
 			cliente.setCodigo(codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null);
 			cliente.setNome(nome != null && !nome.isEmpty() ? nome : null);
 			cliente.setEmail(email != null && !email.isEmpty() ? email : null);
@@ -170,7 +168,13 @@ public class ClienteServlet extends HttpServlet {
 			String senhaHashGerada = gerarSenhaHash(senha.trim());
 			cliente.setSenha(senhaHashGerada != null && !senhaHashGerada.isEmpty() ? senhaHashGerada : null);
 
-			perfil.setCodigo(perfil_id != null && !perfil_id.isEmpty() ? Integer.parseInt(perfil_id) : null);
+			perfil = new Perfil();
+			if (perfil_id != null && !perfil_id.isEmpty()) {
+				perfil.setCodigo(Integer.parseInt(perfil_id));
+			} else {
+				perfil.setCodigo(1);
+			}
+
 			cliente.setPerfil(perfil);
 
 			if (cliente.getCodigo() != null) {

@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lanche</title>
+<title>Endereço</title>
 
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/assets/css/bootstrap-5.3.0.min.css">
@@ -77,14 +77,14 @@
 			</c:if>
 		</c:if>
 
-		<!-- Se o perfil do cliente for do tipo 2, ou seja, Administrador, o mesmo verá o link de cadastro do lanche! -->
+		<!-- Se o perfil do cliente for do tipo 2, ou seja, Administrador, o mesmo verá o link de cadastro do cliente! -->
 		<c:choose>
 			<c:when
 				test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.perfil != null && sessionScope.clienteComCadastro.perfil.codigo == 2}">
 				<a class="btn btn-success btn-sm" style="height: 37px"
-					href="${pageContext.request.contextPath}/Lanche?acao=cadastrarLanche"
-					title="Cadastrar Lanche"><i class="bi bi-pencil-square"></i>
-					Cadastrar Lanche</a>
+					href="${pageContext.request.contextPath}/Endereco?acao=cadastrarEndereco"
+					title="Cadastrar Endereço"><i class="bi bi-pencil-square"></i>
+					Cadastrar Endereço</a>
 			</c:when>
 		</c:choose>
 
@@ -92,40 +92,55 @@
 			<table class="table table-striped table-bordered">
 				<thead style="background-color: #fd7e14; color: white;">
 					<tr>
-						<th>Nome do Lanche</th>
-						<th>Descrição do Lanche</th>
-						<th>Preço do Lanche</th>
-
-						<!-- Se o perfil do cliente for do tipo 2, ou seja, Administrador, o mesmo verá o nome do título de Ações! -->
-						<c:choose>
-							<c:when
-								test="${sessionScope.clienteComCadastro != null  && sessionScope.clienteComCadastro.perfil != null && sessionScope.clienteComCadastro.perfil.codigo == 2}">
-								<th>Ações</th>
-							</c:when>
-						</c:choose>
+						<th>CEP</th>
+						<th>Logradouro</th>
+						<th>Complemento</th>
+						<th>Cidade (Localidade)</th>
+						<th>Estado (UF)</th>
+						<th>Bairro</th>
+						<th>Ações</th>
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="lanche" items="${lanches}">
-						<tr>
-							<td>${lanche.nome}</td>
-							<td>${lanche.descricao_conteudo}</td>
-							<td>R$ ${lanche.preco}</td>
+					<!-- Se o perfil do cliente for do tipo 1, ou seja, Consumidor, o mesmo verá somente o resultado do seu cadastro! -->
+					<c:choose>
+						<c:when
+							test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.perfil != null && sessionScope.clienteComCadastro.perfil.codigo == 1}">
+							<tr>
+								<td>${endereco.cep}</td>
+								<td>${endereco.logradouro}</td>
+								<td>${endereco.complemento}</td>
+								<td>${endereco.localidade}</td>
+								<td>${endereco.uf}</td>
+								<td>${endereco.bairro}</td>
+								<td><a class="btn btn-primary btn-sm"
+									href="${pageContext.request.contextPath}/Endereco?acao=editarEndereco&codigo=${endereco.codigo}"
+									title="Editar Endereço"><i class="bi bi-pencil-square"></i></a>
+									<a class="btn btn-danger btn-sm"
+									href="${pageContext.request.contextPath}/Endereco?acao=removerEndereco&codigo=${endereco.codigo}"
+									title="Remover Endereço"><i class="bi bi-trash"></i></a></td>
+							</tr>
+						</c:when>
 
-							<!-- Se o perfil do cliente for do tipo 2, ou seja, Administrador, o mesmo verá os links de edição e remoção! -->
-							<c:choose>
-								<c:when
-									test="${sessionScope.clienteComCadastro != null  && sessionScope.clienteComCadastro.perfil != null && sessionScope.clienteComCadastro.perfil.codigo == 2}">
+						<c:otherwise>
+							<c:forEach var="endereco" items="${enderecos}">
+								<tr>
+									<td>${endereco.cep}</td>
+									<td>${endereco.logradouro}</td>
+									<td>${endereco.complemento}</td>
+									<td>${endereco.localidade}</td>
+									<td>${endereco.uf}</td>
+									<td>${endereco.bairro}</td>
 									<td><a class="btn btn-primary btn-sm"
-										href="${pageContext.request.contextPath}/Lanche?acao=editarLanche&codigo=${lanche.codigo}"
-										title="Editar Lanche"><i class="bi bi-pencil-square"></i></a>
+										href="${pageContext.request.contextPath}/Endereco?acao=editarEndereco&codigo=${endereco.codigo}"
+										title="Editar Endereço"><i class="bi bi-pencil-square"></i></a>
 										<a class="btn btn-danger btn-sm"
-										href="${pageContext.request.contextPath}/Lanche?acao=removerLanche&codigo=${lanche.codigo}"
-										title="Remover Lanche"><i class="bi bi-trash"></i></a></td>
-								</c:when>
-							</c:choose>
-						</tr>
-					</c:forEach>
+										href="${pageContext.request.contextPath}/Endereco?acao=removerEndereco&codigo=${endereco.codigo}"
+										title="Remover Endereço"><i class="bi bi-trash"></i></a></td>
+								</tr>
+							</c:forEach>
+						</c:otherwise>
+					</c:choose>
 				</tbody>
 			</table>
 		</div>

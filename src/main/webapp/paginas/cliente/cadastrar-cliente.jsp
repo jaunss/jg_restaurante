@@ -85,36 +85,39 @@
 			<div class="col-md-6">
 				<label for="nomeC" class="form-label">Nome do Cliente</label> <input
 					id="nomeC" type="text" name="nome" value="${cliente.nome}"
-					class="form-control" placeholder="Digite seu nome"
+					class="form-control" placeholder="Digite seu Nome" maxlength="100"
 					required="required">
 			</div>
 
 			<div class="col-md-6">
 				<label for="emailC" class="form-label">Email do Cliente</label> <input
 					id="emailC" type="email" name="email" value="${cliente.email}"
-					class="form-control" placeholder="exemplo@exemplo.com"
-					required="required">
+					class="form-control"
+					placeholder="Digite seu Email (Exemplo: exemplo@exemplo.com)"
+					maxlength="100" required="required">
 			</div>
 
 			<div class="col-md-6">
 				<label for="telefoneC" class="form-label">Telefone do
 					Cliente</label> <input id="telefoneC" type="tel" name="telefone"
 					value="${cliente.telefone}" class="form-control"
-					placeholder="(99) 99999-9999" required="required">
+					placeholder="Digite seu Telefone (Exemplo: (99) 99999-9999)"
+					maxlength="15" required="required">
 			</div>
 
 			<div class="col-md-6">
 				<label for="cpfC" class="form-label">CPF do Cliente</label> <input
 					id="cpfC" type="text" name="cpf" value="${cliente.cpf}"
 					class="form-control"
-					placeholder="000.000.000-00 (Digitar somente os números)"
-					required="required">
+					placeholder="Digite seu CPF (Exemplo: 000.000.000-00)"
+					maxlength="14" required="required">
 			</div>
 
 			<div class="col-md-6">
 				<label for="senhaC" class="form-label">Senha do Cliente</label> <input
 					id="senhaC" type="password" name="senha" value="${cliente.senha}"
-					class="form-control" placeholder="********" required="required">
+					class="form-control" placeholder="Digite sua Senha" maxlength="50"
+					required="required">
 			</div>
 
 			<!-- Se o perfil do cliente for do tipo 2, ou seja, Administrador, o mesmo verá a listagem do perfil! -->
@@ -152,6 +155,9 @@
 		<p>&copy; 2025 - JG Restaurante. Todos os direitos reservados.</p>
 	</footer>
 
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

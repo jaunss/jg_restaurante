@@ -115,7 +115,6 @@ public class ClienteDAO {
 
 				Perfil perfil = new Perfil();
 				cliente.setPerfil(perfil);
-
 				cliente.getPerfil().setCodigo(rs.getInt("PERFIL_ID"));
 
 				clientes.add(cliente);
@@ -155,7 +154,6 @@ public class ClienteDAO {
 
 				Perfil perfil = new Perfil();
 				cliente.setPerfil(perfil);
-
 				cliente.getPerfil().setCodigo(rs.getInt("PERFIL_ID"));
 			}
 		} catch (SQLException e) {

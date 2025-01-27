@@ -26,7 +26,7 @@ public class MenuDAO {
 
 		try {
 			sb = new StringBuilder();
-			sb.append("SELECT * FROM menu WHERE codigo IN (1, 4, 8, 12) ORDER BY codigo ASC");
+			sb.append("SELECT * FROM menu WHERE codigo IN (1, 4, 8, 12, 18) ORDER BY codigo ASC");
 
 			conn = new ConfiguraConexaoBancoDeDados().getConexao();
 
