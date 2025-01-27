@@ -86,16 +86,15 @@
 				<label for="cepE" class="form-label">CEP</label> <input id="cepE"
 					type="text" name="cep" value="${endereco.cep}" class="form-control"
 					placeholder="Digite seu CEP (Exemplo: 00.000-000 - Somente os números)"
-					maxlength="8">
-				<button type="button" class="btn btn-primary"
-					onclick="buscarEnderecoPorCep();">Buscar CEP</button>
+					maxlength="9" required="required">
 			</div>
 
 			<div class="col-md-6">
 				<label for="logradouroE" class="form-label">Logradouro</label> <input
 					id="logradouroE" type="text" name="logradouro"
 					value="${endereco.logradouro}" class="form-control"
-					placeholder="Digite seu Logradouro" maxlength="100">
+					placeholder="Digite seu Logradouro" maxlength="100"
+					required="required">
 			</div>
 
 			<div class="col-md-6">
@@ -110,20 +109,22 @@
 					(Cidade)</label> <input id="localidadeE" type="text" name="localidade"
 					value="${endereco.localidade}" class="form-control"
 					placeholder="Digite sua Localidade/Cidade (Exemplo: Sao Paulo)"
-					maxlength="100">
+					maxlength="100" required="required">
 			</div>
 
 			<div class="col-md-6">
 				<label for="ufE" class="form-label">UF (Estado)</label> <input
 					id="ufE" type="text" name="uf" value="${endereco.uf}"
 					class="form-control"
-					placeholder="Digite seu UF/Estado (Exemplo: SP)" maxlength="2">
+					placeholder="Digite seu UF/Estado (Exemplo: SP)" maxlength="2"
+					required="required">
 			</div>
 
 			<div class="col-md-6">
 				<label for="bairroE" class="form-label">Bairro</label> <input
 					id="bairroE" type="text" name="bairro" value="${endereco.bairro}"
-					class="form-control" placeholder="Digite seu Bairro" maxlength="50">
+					class="form-control" placeholder="Digite seu Bairro" maxlength="50"
+					required="required">
 			</div>
 
 			<div class="col-12 text-end">
@@ -158,47 +159,6 @@
 				}
 			});
 		});
-		
-		function buscarEnderecoPorCep() {
-		    var cep = document.getElementById('cepC').value;
-		    
-		    // Verifica se o CEP está preenchido e tem o formato correto (8 caracteres numéricos)
-		    if (cep && cep.length === 8 && /^[0-9]{8}$/.test(cep)) {
-		        // Requisição para a API ViaCep
-		        fetch(`https://viacep.com.br/ws/` + cep + `/json/`)
-		            .then(response => {
-		                if (!response.ok) {
-		                    throw new Error('Não foi possível acessar a API do ViaCep');
-		                }
-		                return response.json();
-		            })
-		            .then(data => {
-		                // Preenche os campos com os dados da resposta
-		                if (data.erro) {
-		                    alert('CEP não encontrado.');
-		                } else {
-		                    document.getElementById('logradouroC').value = data.logradouro || '';
-		                    document.getElementById('complementoC').value = data.complemento || '';
-		                    document.getElementById('localidadeC').value = data.localidade || '';
-		                    document.getElementById('ufC').value = data.uf || '';
-		                    document.getElementById('bairroC').value = data.bairro || '';
-		                    
-		                    // Habilita os campos de endereço
-		                    document.getElementById('logradouroC').disabled = false;
-		                    document.getElementById('complementoC').disabled = false;
-		                    document.getElementById('localidadeC').disabled = false;
-		                    document.getElementById('ufC').disabled = false;
-		                    document.getElementById('bairroC').disabled = false;
-		                }
-		            })
-		            .catch(error => {
-		                console.error('Erro:', error);
-		                alert('Erro ao buscar dados do CEP.');
-		            });
-		    } else {
-		        alert('Por favor, insira um CEP válido.');
-		    }
-		}
 	</script>
 
 	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

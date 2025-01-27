@@ -8,11 +8,12 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 public class ClienteRS {
-
 	public Endereco buscarEnderecoPorCep(Cliente cliente) {
+		Client client = null;
 		Endereco endereco = null;
+
 		try {
-			Client client = ClientBuilder.newClient();
+			client = ClientBuilder.newClient();
 
 			Response response = client.target("https://viacep.com.br/ws/" + cliente.getEndereco().getCep() + "/json/")
 					.request(MediaType.APPLICATION_JSON).get();
@@ -22,6 +23,10 @@ public class ClienteRS {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			if (client != null) {
+				client.close();
+			}
 		}
 
 		return endereco;

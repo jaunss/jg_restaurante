@@ -71,7 +71,8 @@ public class EnderecoServlet extends HttpServlet {
 						&& cliente.getPerfil().getCodigo() == 2) {
 					redirecionarParaPagina(request, response, "/paginas/endereco/cadastrar-endereco.jsp", null, null);
 				} else {
-					redirecionarParaPagina(request, response, "/paginas/endereco/cadastrar-endereco.jsp", null, null);
+					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+							"Você não está logado e/ou não tem o perfil de administrador!", "perigo");
 				}
 			} else if (acao.equalsIgnoreCase("editarEndereco")) {
 				if (sessaoCliente != null && cliente != null) {
@@ -131,9 +132,41 @@ public class EnderecoServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
+			endereco = new Endereco();
 
+			enderecoService = new EnderecoService();
+
+			String codigo = request.getParameter("codigo");
+			String cep = request.getParameter("cep");
+			String logradouro = request.getParameter("logradouro");
+			String complemento = request.getParameter("complemento");
+			String localidade = request.getParameter("localidade");
+			String uf = request.getParameter("uf");
+			String bairro = request.getParameter("bairro");
+
+			endereco.setCodigo(codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null);
+			endereco.setCep(cep != null && !cep.isEmpty() ? cep : null);
+			endereco.setLogradouro(logradouro != null && !logradouro.isEmpty() ? logradouro : null);
+			endereco.setComplemento(complemento != null && !complemento.isEmpty() ? complemento : null);
+			endereco.setLocalidade(localidade != null && !localidade.isEmpty() ? localidade : null);
+			endereco.setUf(uf != null && !uf.isEmpty() ? uf : null);
+			endereco.setBairro(bairro != null && !bairro.isEmpty() ? bairro : null);
+
+			if (endereco.getCodigo() != null) {
+				enderecoService.atualizarEnderecoPorCodigo(endereco);
+
+				request.setAttribute("enderecos", enderecoService.buscarTodosEnderecos());
+				redirecionarParaPagina(request, response, "/paginas/endereco/listar-endereco.jsp",
+						"Endereço atualizado com sucesso!", "sucesso");
+			} else {
+				enderecoService.adicionarEndereco(endereco);
+
+				request.setAttribute("enderecos", enderecoService.buscarTodosEnderecos());
+				redirecionarParaPagina(request, response, "/paginas/endereco/listar-endereco.jsp",
+						"Endereço cadastrado com sucesso!", "sucesso");
+			}
 		} catch (Exception e) {
-			logger.severe("Erro ao processar a solicitação do cliente: " + e.getMessage());
+			logger.severe("Erro ao processar a solicitação do endereço: " + e.getMessage());
 
 			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do endereço!",
 					"erro");
