@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -23,6 +22,7 @@ import br.com.joaogcm.jg.restaurante.caseiro.service.LancheService;
 import br.com.joaogcm.jg.restaurante.caseiro.service.MenuService;
 import br.com.joaogcm.jg.restaurante.caseiro.service.PedidoLancheService;
 import br.com.joaogcm.jg.restaurante.caseiro.service.PedidoService;
+import br.com.joaogcm.jg.restaurante.caseiro.util.ValidacaoUtil;
 
 @WebServlet(name = "Pedido", urlPatterns = { "/Pedido" })
 public class PedidoServlet extends HttpServlet {
@@ -45,7 +45,7 @@ public class PedidoServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String acao = request.getParameter("acao");
+		String acao = new ValidacaoUtil().getParametroString(request, "acao");
 
 		/* Usado para deixar o item do submenu selecionado quando clicado */
 		request.setAttribute("acao", acao);
@@ -63,60 +63,62 @@ public class PedidoServlet extends HttpServlet {
 			Set<Menu> menus = menuService.listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
-			if (acao.equalsIgnoreCase("listarPedido")) {
+			if (acao.equalsIgnoreCase(ValidacaoUtil.getAcaoListarPedido())) {
 				if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
 						&& cliente.getPerfil().getCodigo() == 1) {
 					Set<Pedido> pedidos = pedidoService.buscarPedidoPorCliente(cliente);
 
 					request.setAttribute("pedidos", pedidos);
-					redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp", null, null);
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaListarPedido(), null, null);
 				} else if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
 						&& cliente.getPerfil().getCodigo() == 2) {
 					Set<Pedido> pedidos = pedidoService.buscarTodosPedidos();
 
 					request.setAttribute("pedidos", pedidos);
-					redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp", null, null);
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaListarPedido(), null, null);
 				} else {
-					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
-							"Você não está logado, faça o login!", "perigo");
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaAutenticarCliente(), "Você não está logado, faça o login!",
+							"perigo");
 				}
-			} else if (acao.equalsIgnoreCase("cadastrarPedido")) {
+			} else if (acao.equalsIgnoreCase(ValidacaoUtil.getAcaoCadastrarPedido())) {
 				if (sessaoCliente != null && cliente != null) {
 					request.setAttribute("cliente", cliente);
 
 					request.setAttribute("lanches", lancheService.buscarTodosLanches());
-					redirecionarParaPagina(request, response, "/paginas/pedido/cadastrar-pedido.jsp", null, null);
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaCadastrarPedido(), null, null);
 				} else {
-					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
-							"Você não está logado, faça o login!", "perigo");
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaAutenticarCliente(), "Você não está logado, faça o login!",
+							"perigo");
 				}
-			} else if (acao.equalsIgnoreCase("editarPedido")) {
+			} else if (acao.equalsIgnoreCase(ValidacaoUtil.getAcaoEditarPedido())) {
 				if (sessaoCliente != null && cliente != null) {
-					String codigo = request.getParameter("codigo");
-					Integer codigoP = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
-
+					Integer codigoP = new ValidacaoUtil().getParametroInteger(request, "codigo");
 					pedido.setCodigo(codigoP);
 
 					pedido = pedidoService.buscarPedidoPorCodigo(pedido);
 
 					if (pedido.getCodigo() != null) {
 						request.setAttribute("pedido", pedido);
-						redirecionarParaPagina(request, response, "/paginas/pedido/cadastrar-pedido.jsp",
-								"Edite o pedido!", "sucesso");
+						new ValidacaoUtil().redirecionarParaAPagina(request, response,
+								ValidacaoUtil.getPaginaCadastrarPedido(), "Edite o pedido!", "sucesso");
 					} else {
 						request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
-						redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp",
-								"Pedido não encontrado!", "perigo");
+						new ValidacaoUtil().redirecionarParaAPagina(request, response,
+								ValidacaoUtil.getPaginaListarPedido(), "Pedido não encontrado!", "perigo");
 					}
 				} else {
-					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
-							"Você não está logado, faça o login!", "perigo");
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaAutenticarCliente(), "Você não está logado, faça o login!",
+							"perigo");
 				}
-			} else if (acao.equalsIgnoreCase("removerPedido")) {
+			} else if (acao.equalsIgnoreCase(ValidacaoUtil.getAcaoRemoverPedido())) {
 				if (sessaoCliente != null && cliente != null) {
-					String codigo = request.getParameter("codigo");
-					Integer codigoP = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
-
+					Integer codigoP = new ValidacaoUtil().getParametroInteger(request, "codigo");
 					pedido.setCodigo(codigoP);
 
 					pedido = pedidoService.buscarPedidoPorCodigo(pedido);
@@ -125,23 +127,24 @@ public class PedidoServlet extends HttpServlet {
 						pedidoService.removerPedidoPorCodigo(pedido);
 
 						request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
-						redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp",
-								"Pedido removido com sucesso!", "sucesso");
+						new ValidacaoUtil().redirecionarParaAPagina(request, response,
+								ValidacaoUtil.getPaginaListarPedido(), "Pedido removido com sucesso!", "sucesso");
 					} else {
 						request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
-						redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp",
-								"Não foi possível remover o pedido!", "perigo");
+						new ValidacaoUtil().redirecionarParaAPagina(request, response,
+								ValidacaoUtil.getPaginaListarPedido(), "Não foi possível remover o pedido!", "perigo");
 					}
 				} else {
-					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
-							"Você não está logado, faça o login!", "perigo");
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaAutenticarCliente(), "Você não está logado, faça o login!",
+							"perigo");
 				}
 			}
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação do pedido: " + e.getMessage());
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do pedido!",
-					"erro");
+			new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaError(),
+					"Erro ao processar a solicitação do pedido!", "erro");
 		}
 	}
 
@@ -159,17 +162,16 @@ public class PedidoServlet extends HttpServlet {
 			Set<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
-			String codigo = request.getParameter("codigo");
-			String dataPedido = request.getParameter("dataPedido");
-			String total = request.getParameter("total");
+			Integer codigo = new ValidacaoUtil().getParametroInteger(request, "codigo");
+			LocalDateTime dataPedido = new ValidacaoUtil().getParametroLocalDateTime(request, "dataPedido");
+			BigDecimal total = new ValidacaoUtil().getParametroBigDecimal(request, "total");
 
 			/* Obtém os códigos dos lanches selecionados */
-			String[] codigoLanches = request.getParameterValues("lanches");
+			String[] codigoLanches = new ValidacaoUtil().getParametroArrayString(request, "lanches");
 
-			pedido.setCodigo(codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null);
-			pedido.setDataPedido(dataPedido != null && !dataPedido.isEmpty() ? LocalDateTime.parse(dataPedido)
-					: LocalDateTime.now());
-			pedido.setTotal(total != null && !total.isEmpty() ? new BigDecimal(total) : null);
+			pedido.setCodigo(codigo);
+			pedido.setDataPedido(dataPedido);
+			pedido.setTotal(total);
 
 			if (codigoLanches != null) {
 				for (String codigoLanche : codigoLanches) {
@@ -182,7 +184,8 @@ public class PedidoServlet extends HttpServlet {
 								lanches.add(lanche);
 							}
 						} catch (NumberFormatException e) {
-							redirecionarParaPagina(request, response, "/error.jsp",
+							new ValidacaoUtil().redirecionarParaAPagina(request, response,
+									ValidacaoUtil.getPaginaError(),
 									"Erro ao processar a solicitação do pedido pois o código do lanche é inválido!",
 									"erro");
 						} catch (Exception e) {
@@ -215,7 +218,7 @@ public class PedidoServlet extends HttpServlet {
 				}
 
 				request.setAttribute("pedidos", pedidoService.buscarTodosPedidos());
-				redirecionarParaPagina(request, response, "/paginas/pedido/listar-pedido.jsp",
+				new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaListarPedido(),
 						"Pedido atualizado com sucesso!", "sucesso");
 			} else {
 				/* Adiciona novos relacionamentos entre Pedido e Lanche */
@@ -225,40 +228,14 @@ public class PedidoServlet extends HttpServlet {
 
 				pedidoService.adicionarPedido(pedido);
 
-				redirecionarParaPagina(request, response, "/paginas/pedido/cadastrar-pedido.jsp",
+				new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaCadastrarPedido(),
 						"Pedido adicionado com sucesso!", "sucesso");
 			}
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação do pedido: " + e.getMessage());
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do pedido!",
-					"erro");
+			new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaError(),
+					"Erro ao processar a solicitação do pedido!", "erro");
 		}
-	}
-
-	/**
-	 * Redireciona para determinadas páginas incluindo mensagem e o tipo da
-	 * mensagem.
-	 * 
-	 * @param request
-	 * @param response
-	 * @param pagina
-	 * @param mensagem
-	 * @param tipoMensagem
-	 * @throws ServletException
-	 * @throws IOException
-	 */
-	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina,
-			String mensagem, String tipoMensagem) throws ServletException, IOException {
-		if (mensagem != null) {
-			request.setAttribute("mensagem", mensagem);
-		}
-
-		if (tipoMensagem != null) {
-			request.setAttribute("tipoMensagem", tipoMensagem);
-		}
-
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher(pagina);
-		requestDispatcher.forward(request, response);
 	}
 }

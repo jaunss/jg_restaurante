@@ -1,6 +1,5 @@
 package br.com.joaogcm.jg.restaurante.caseiro.rs;
 
-import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Endereco;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -8,14 +7,14 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 public class ClienteRS {
-	public Endereco buscarEnderecoPorCep(Cliente cliente) {
+	public Endereco buscarEnderecoPorCep(String cep) {
 		Client client = null;
 		Endereco endereco = null;
 
 		try {
 			client = ClientBuilder.newClient();
 
-			Response response = client.target("https://viacep.com.br/ws/" + cliente.getEndereco().getCep() + "/json/")
+			Response response = client.target("https://viacep.com.br/ws/" + cep + "/json/")
 					.request(MediaType.APPLICATION_JSON).get();
 
 			if (response.getStatus() == 200) {

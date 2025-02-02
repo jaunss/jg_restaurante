@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -18,6 +17,7 @@ import br.com.joaogcm.jg.restaurante.caseiro.model.Lanche;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
 import br.com.joaogcm.jg.restaurante.caseiro.service.LancheService;
 import br.com.joaogcm.jg.restaurante.caseiro.service.MenuService;
+import br.com.joaogcm.jg.restaurante.caseiro.util.ValidacaoUtil;
 
 @WebServlet(name = "Lanche", urlPatterns = { "/Lanche" })
 public class LancheServlet extends HttpServlet {
@@ -37,7 +37,7 @@ public class LancheServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String acao = request.getParameter("acao");
+		String acao = new ValidacaoUtil().getParametroString(request, "acao");
 
 		/* Usado para deixar o item do submenu selecionado quando clicado */
 		request.setAttribute("acao", acao);
@@ -54,46 +54,46 @@ public class LancheServlet extends HttpServlet {
 			Set<Menu> menus = menuService.listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
-			if (acao.equalsIgnoreCase("listarLanche")) {
+			if (acao.equalsIgnoreCase(ValidacaoUtil.getAcaoListarLanche())) {
 				request.setAttribute("lanches", lancheService.buscarTodosLanches());
-				redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp", null, null);
-			} else if (acao.equalsIgnoreCase("cadastrarLanche")) {
+				new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaListarLanche(),
+						null, null);
+			} else if (acao.equalsIgnoreCase(ValidacaoUtil.getAcaoCadastrarLanche())) {
 				if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
 						&& cliente.getPerfil().getCodigo() == 2) {
-					redirecionarParaPagina(request, response, "/paginas/lanche/cadastrar-lanche.jsp", null, null);
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaCadastrarLanche(), null, null);
 				} else {
-					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaAutenticarCliente(),
 							"Você não está logado e/ou não tem o perfil de administrador!", "perigo");
 				}
-			} else if (acao.equalsIgnoreCase("editarLanche")) {
+			} else if (acao.equalsIgnoreCase(ValidacaoUtil.getAcaoEditarLanche())) {
 				if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
 						&& cliente.getPerfil().getCodigo() == 2) {
-					String codigo = request.getParameter("codigo");
-					Integer codigoL = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
-
+					Integer codigoL = new ValidacaoUtil().getParametroInteger(request, "codigo");
 					lanche.setCodigo(codigoL);
 
 					lanche = lancheService.buscarLanchePorCodigo(lanche);
 
 					if (lanche.getCodigo() != null) {
 						request.setAttribute("lanche", lanche);
-						redirecionarParaPagina(request, response, "/paginas/lanche/cadastrar-lanche.jsp",
-								"Edite o lanche!", "sucesso");
+						new ValidacaoUtil().redirecionarParaAPagina(request, response,
+								ValidacaoUtil.getPaginaCadastrarLanche(), "Edite o lanche!", "sucesso");
 					} else {
 						request.setAttribute("lanches", lancheService.buscarTodosLanches());
-						redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp",
-								"Lanche não encontrado!", "perigo");
+						new ValidacaoUtil().redirecionarParaAPagina(request, response,
+								ValidacaoUtil.getPaginaListarLanche(), "Lanche não encontrado!", "perigo");
 					}
 				} else {
-					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaAutenticarCliente(),
 							"Você não está logado e/ou não tem o perfil de administrador!", "perigo");
 				}
-			} else if (acao.equalsIgnoreCase("removerLanche")) {
+			} else if (acao.equalsIgnoreCase(ValidacaoUtil.getAcaoRemoverLanche())) {
 				if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
 						&& cliente.getPerfil().getCodigo() == 2) {
-					String codigo = request.getParameter("codigo");
-					Integer codigoL = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
-
+					Integer codigoL = new ValidacaoUtil().getParametroInteger(request, "codigo");
 					lanche.setCodigo(codigoL);
 
 					lanche = lancheService.buscarLanchePorCodigo(lanche);
@@ -102,23 +102,24 @@ public class LancheServlet extends HttpServlet {
 						lancheService.removerLanchePorCodigo(lanche);
 
 						request.setAttribute("lanches", lancheService.buscarTodosLanches());
-						redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp",
-								"Lanche removido com sucesso!", "sucesso");
+						new ValidacaoUtil().redirecionarParaAPagina(request, response,
+								ValidacaoUtil.getPaginaListarLanche(), "Lanche removido com sucesso!", "sucesso");
 					} else {
 						request.setAttribute("lanches", lancheService.buscarTodosLanches());
-						redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp",
-								"Não foi possível remover o lanche!", "perigo");
+						new ValidacaoUtil().redirecionarParaAPagina(request, response,
+								ValidacaoUtil.getPaginaListarLanche(), "Não foi possível remover o lanche!", "perigo");
 					}
 				} else {
-					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaAutenticarCliente(),
 							"Você não está logado e/ou não tem o perfil de administrador!", "perigo");
 				}
 			}
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação do lanche: " + e.getMessage());
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do lanche!",
-					"erro");
+			new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaError(),
+					"Erro ao processar a solicitação do lanche!", "erro");
 		}
 	}
 
@@ -132,62 +133,33 @@ public class LancheServlet extends HttpServlet {
 			Set<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
-			String codigo = request.getParameter("codigo");
-			String nome = request.getParameter("nome");
-			String descricao_conteudo = request.getParameter("descricao_conteudo");
-			String preco = request.getParameter("preco");
+			Integer codigo = new ValidacaoUtil().getParametroInteger(request, "codigo");
+			String nome = new ValidacaoUtil().getParametroString(request, "nome");
+			String descricao_conteudo = new ValidacaoUtil().getParametroString(request, "descricao_conteudo");
+			BigDecimal preco = new ValidacaoUtil().getParametroBigDecimal(request, "preco");
 
-			lanche.setCodigo(codigo != null && !codigo.trim().isEmpty() ? Integer.parseInt(codigo) : null);
-			lanche.setNome(nome != null && !nome.trim().isEmpty() ? nome : null);
-			lanche.setDescricao_conteudo(
-					descricao_conteudo != null && !descricao_conteudo.trim().isEmpty() ? descricao_conteudo : null);
-			lanche.setPreco(preco != null && !preco.trim().isEmpty() ? new BigDecimal(preco) : null);
+			lanche.setCodigo(codigo);
+			lanche.setNome(nome);
+			lanche.setDescricao_conteudo(descricao_conteudo);
+			lanche.setPreco(preco);
 
 			if (lanche.getCodigo() != null) {
 				lancheService.atualizarLanchePorCodigo(lanche);
 
 				request.setAttribute("lanches", lancheService.buscarTodosLanches());
-				redirecionarParaPagina(request, response, "/paginas/lanche/listar-lanche.jsp",
+				new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaListarLanche(),
 						"Lanche atualizado com sucesso!", "sucesso");
 			} else {
 				lancheService.adicionarLanche(lanche);
 
-				redirecionarParaPagina(request, response, "/paginas/lanche/cadastrar-lanche.jsp",
+				new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaCadastrarLanche(),
 						"Lanche adicionado com sucesso!", "sucesso");
 			}
-
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação do lanche: " + e.getMessage());
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do lanche!",
-					"erro");
+			new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaError(),
+					"Erro ao processar a solicitação do lanche!", "erro");
 		}
-
-	}
-
-	/**
-	 * Redireciona para determinadas páginas incluindo mensagem e o tipo da
-	 * mensagem.
-	 * 
-	 * @param request
-	 * @param response
-	 * @param pagina
-	 * @param mensagem
-	 * @param tipoMensagem
-	 * @throws ServletException
-	 * @throws IOException
-	 */
-	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina,
-			String mensagem, String tipoMensagem) throws ServletException, IOException {
-		if (mensagem != null) {
-			request.setAttribute("mensagem", mensagem);
-		}
-
-		if (tipoMensagem != null) {
-			request.setAttribute("tipoMensagem", tipoMensagem);
-		}
-
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher(pagina);
-		requestDispatcher.forward(request, response);
 	}
 }

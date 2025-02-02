@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,12 +11,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import br.com.joaogcm.jg.restaurante.caseiro.model.Cidade;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
+import br.com.joaogcm.jg.restaurante.caseiro.model.Estado;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Perfil;
 import br.com.joaogcm.jg.restaurante.caseiro.service.ClienteService;
+import br.com.joaogcm.jg.restaurante.caseiro.service.EstadoService;
 import br.com.joaogcm.jg.restaurante.caseiro.service.MenuService;
 import br.com.joaogcm.jg.restaurante.caseiro.service.PerfilService;
+import br.com.joaogcm.jg.restaurante.caseiro.util.ValidacaoUtil;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 
@@ -30,10 +33,12 @@ public class ClienteServlet extends HttpServlet {
 
 	private Cliente cliente = null;
 	private Perfil perfil = null;
+	private Cidade cidade = null;
 
 	private ClienteService clienteService = null;
 	private PerfilService perfilService = null;
 	private MenuService menuService = null;
+	private EstadoService estadoService = null;
 
 	public ClienteServlet() {
 		super();
@@ -41,7 +46,7 @@ public class ClienteServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String acao = request.getParameter("acao");
+		String acao = new ValidacaoUtil().getParametroString(request, ValidacaoUtil.getAcao());
 
 		/* Usado para deixar o item do submenu selecionado quando clicado */
 		request.setAttribute("acao", acao);
@@ -52,6 +57,7 @@ public class ClienteServlet extends HttpServlet {
 			clienteService = new ClienteService();
 			perfilService = new PerfilService();
 			menuService = new MenuService();
+			estadoService = new EstadoService();
 
 			HttpSession sessaoCliente = request.getSession(false);
 			Cliente cliente = (Cliente) sessaoCliente.getAttribute("clienteComCadastro");
@@ -59,60 +65,65 @@ public class ClienteServlet extends HttpServlet {
 			Set<Menu> menus = menuService.listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
-			if (acao.equalsIgnoreCase("listarCliente")) {
+			if (acao.equalsIgnoreCase(ValidacaoUtil.getAcaoListarCliente())) {
 				if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
 						&& cliente.getPerfil().getCodigo() == 1) {
 					Cliente newCliente = clienteService.buscarClientePorCodigo(cliente);
 
 					request.setAttribute("newCliente", newCliente);
-					redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp", null, null);
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaListarCliente(), null, null);
 				} else if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
 						&& cliente.getPerfil().getCodigo() == 2) {
 					request.setAttribute("clientes", clienteService.buscarTodosClientes());
-					redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp", null, null);
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaListarCliente(), null, null);
 				} else {
-					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
-							"Você não está logado, faça o login!", "perigo");
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaListarCliente(), "Você não está logado, faça o login!", "perigo");
 				}
-			} else if (acao.equalsIgnoreCase("cadastrarCliente")) {
+			} else if (acao.equalsIgnoreCase(ValidacaoUtil.getAcaoCadastrarCliente())) {
+				Set<Estado> estados = estadoService.buscarTodosEstados();
+				request.setAttribute("estados", estados);
+
 				if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
 						&& cliente.getPerfil().getCodigo() == 1) {
-					redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null, null);
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaCadastrarCliente(), null, null);
 				} else if (sessaoCliente != null && cliente != null && cliente.getPerfil() != null
 						&& cliente.getPerfil().getCodigo() == 2) {
 					/* Lista os perfis do cliente se o perfil do cliente for administrador */
 					request.setAttribute("perfis", perfilService.buscarPerfilPorCodigo(cliente.getPerfil()));
-					redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null, null);
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaCadastrarCliente(), null, null);
 				} else {
-					redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp", null, null);
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaCadastrarCliente(), null, null);
 				}
-			} else if (acao.equalsIgnoreCase("editarCliente")) {
+			} else if (acao.equalsIgnoreCase(ValidacaoUtil.getAcaoEditarCliente())) {
 				if (sessaoCliente != null && cliente != null) {
-					String codigo = request.getParameter("codigo");
-					Integer codigoC = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
-
+					Integer codigoC = new ValidacaoUtil().getParametroInteger(request, "codigo");
 					cliente.setCodigo(codigoC);
 
 					cliente = clienteService.buscarClientePorCodigo(cliente);
 
 					if (cliente.getCodigo() != null) {
 						request.setAttribute("cliente", cliente);
-						redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp",
-								"Edite o cliente!", "sucesso");
+						new ValidacaoUtil().redirecionarParaAPagina(request, response,
+								ValidacaoUtil.getPaginaCadastrarCliente(), "Edite o cliente!", "sucesso");
 					} else {
 						request.setAttribute("clientes", clienteService.buscarTodosClientes());
-						redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
-								"Cliente não encontrado!", "perigo");
+						new ValidacaoUtil().redirecionarParaAPagina(request, response,
+								ValidacaoUtil.getPaginaListarCliente(), "Cliente não encontrado!", "perigo");
 					}
 				} else {
-					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
-							"Você não está logado, faça o login!", "perigo");
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaAutenticarCliente(), "Você não está logado, faça o login!",
+							"perigo");
 				}
 			} else if (acao.equalsIgnoreCase("removerCliente")) {
 				if (sessaoCliente != null && cliente != null) {
-					String codigo = request.getParameter("codigo");
-					Integer codigoC = codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null;
-
+					Integer codigoC = new ValidacaoUtil().getParametroInteger(request, "codigo");
 					cliente.setCodigo(codigoC);
 
 					cliente = clienteService.buscarClientePorCodigo(cliente);
@@ -121,23 +132,26 @@ public class ClienteServlet extends HttpServlet {
 						clienteService.removerClientePorCodigo(cliente);
 
 						request.setAttribute("clientes", clienteService.buscarTodosClientes());
-						redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
-								"Cliente removido com sucesso!", "sucesso");
+
+						new ValidacaoUtil().redirecionarParaAPagina(request, response,
+								ValidacaoUtil.getPaginaListarCliente(), "Cliente removido com sucesso!", "sucesso");
 					} else {
 						request.setAttribute("clientes", clienteService.buscarTodosClientes());
-						redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
-								"Não foi possível remover o cliente!", "perigo");
+						new ValidacaoUtil().redirecionarParaAPagina(request, response,
+								ValidacaoUtil.getPaginaListarCliente(), "Não foi possível remover o cliente!",
+								"perigo");
 					}
 				} else {
-					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
-							"Você não está logado, faça o login!", "perigo");
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaAutenticarCliente(), "Você não está logado, faça o login!",
+							"perigo");
 				}
 			}
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação do cliente: " + e.getMessage());
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do cliente!",
-					"erro");
+			new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaError(),
+					"Erro ao processar a solicitação do cliente!", "erro");
 		}
 	}
 
@@ -146,24 +160,25 @@ public class ClienteServlet extends HttpServlet {
 		try {
 			clienteService = new ClienteService();
 			perfilService = new PerfilService();
+			estadoService = new EstadoService();
 
 			Set<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
-			String codigo = request.getParameter("codigo");
-			String nome = request.getParameter("nome");
-			String email = request.getParameter("email");
-			String telefone = request.getParameter("telefone");
-			String cpf = request.getParameter("cpf");
-			String senha = request.getParameter("senha");
-			String perfil_id = request.getParameter("perfil.codigo");
+			Integer codigo = new ValidacaoUtil().getParametroInteger(request, "codigo");
+			String nome = new ValidacaoUtil().getParametroString(request, "nome");
+			String email = new ValidacaoUtil().getParametroString(request, "email");
+			String telefone = new ValidacaoUtil().getParametroString(request, "telefone");
+			String cpf = new ValidacaoUtil().getParametroString(request, "cpf");
+			String senha = new ValidacaoUtil().getParametroString(request, "senha");
+			String perfil_id = new ValidacaoUtil().getParametroString(request, "perfil.codigo");
 
 			cliente = new Cliente();
-			cliente.setCodigo(codigo != null && !codigo.isEmpty() ? Integer.parseInt(codigo) : null);
-			cliente.setNome(nome != null && !nome.isEmpty() ? nome : null);
-			cliente.setEmail(email != null && !email.isEmpty() ? email : null);
-			cliente.setTelefone(telefone != null && !telefone.isEmpty() ? telefone : null);
-			cliente.setCpf(cpf != null && !cpf.isEmpty() ? cpf : null);
+			cliente.setCodigo(codigo);
+			cliente.setNome(nome);
+			cliente.setEmail(email);
+			cliente.setTelefone(telefone);
+			cliente.setCpf(cpf);
 
 			String senhaHashGerada = gerarSenhaHash(senha.trim());
 			cliente.setSenha(senhaHashGerada != null && !senhaHashGerada.isEmpty() ? senhaHashGerada : null);
@@ -181,46 +196,20 @@ public class ClienteServlet extends HttpServlet {
 				clienteService.atualizarClientePorCodigo(cliente);
 
 				request.setAttribute("clientes", clienteService.buscarTodosClientes());
-				redirecionarParaPagina(request, response, "/paginas/cliente/listar-cliente.jsp",
+				new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaListarCliente(),
 						"Cliente atualizado com sucesso!", "sucesso");
 			} else {
 				clienteService.adicionarCliente(cliente);
 
-				redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
-						"Cliente cadastrado com sucesso!", "sucesso");
+				new ValidacaoUtil().redirecionarParaAPagina(request, response,
+						ValidacaoUtil.getPaginaAutenticarCliente(), "Cliente cadastrado com sucesso!", "sucesso");
 			}
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação do cliente: " + e.getMessage());
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação do cliente!",
-					"erro");
+			new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaError(),
+					"Erro ao processar a solicitação do cliente!", "erro");
 		}
-	}
-
-	/**
-	 * Redireciona para determinadas páginas incluindo mensagem e o tipo da
-	 * mensagem.
-	 * 
-	 * @param request
-	 * @param response
-	 * @param pagina
-	 * @param mensagem
-	 * @param tipoMensagem
-	 * @throws ServletException
-	 * @throws IOException
-	 */
-	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina,
-			String mensagem, String tipoMensagem) throws ServletException, IOException {
-		if (mensagem != null) {
-			request.setAttribute("mensagem", mensagem);
-		}
-
-		if (tipoMensagem != null) {
-			request.setAttribute("tipoMensagem", tipoMensagem);
-		}
-
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher(pagina);
-		requestDispatcher.forward(request, response);
 	}
 
 	/**

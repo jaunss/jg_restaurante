@@ -126,8 +126,8 @@
 					test="${sessionScope.clienteComCadastro != null && sessionScope.clienteComCadastro.perfil != null && sessionScope.clienteComCadastro.perfil.codigo == 2}">
 					<div class="col-md-6">
 						<label for="perfilC" class="form-label">Perfil do Cliente</label>
-						<select class="form-select" id="perfil" name="perfil.codigo">
-							<option value="" disabled="disabled" selected="selected">Selecione...</option>
+						<select id="perfilC" class="form-select" name="perfil.codigo">
+							<option value="" selected="selected" />
 							<c:forEach var="perfil" items="${perfis}">
 								<option value="${perfil.codigo}"
 									<c:if test="${perfil.codigo == cliente.perfil.codigo}">selected</c:if>>${perfil.nome}</option>
@@ -136,6 +136,23 @@
 					</div>
 				</c:when>
 			</c:choose>
+
+			<div class="col-md-6">
+				<label for="estadoC" class="form-label">Estado</label> <select
+					id="estadoC" class="form-select" name="estado.codigo">
+					<option value="" selected="selected">Selecione um estado</option>
+					<c:forEach var="estado" items="${estados}">
+						<option value="${estado.codigo}">${estado.nome}</option>
+					</c:forEach>
+				</select>
+			</div>
+
+			<div class="col-md-6">
+				<label for="cidadeC" class="form-label">Cidade</label> <select
+					id="cidadeC" class="form-select" name="cidade.codigo">
+					<option value="" selected="selected">Selecione uma cidade</option>
+				</select>
+			</div>
 
 			<div class="col-12 text-end">
 				<button type="reset" class="btn btn-secondary">

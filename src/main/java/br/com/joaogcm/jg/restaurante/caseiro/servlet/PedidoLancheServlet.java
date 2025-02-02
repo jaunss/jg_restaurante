@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,6 +16,7 @@ import br.com.joaogcm.jg.restaurante.caseiro.model.Pedido;
 import br.com.joaogcm.jg.restaurante.caseiro.service.LancheService;
 import br.com.joaogcm.jg.restaurante.caseiro.service.MenuService;
 import br.com.joaogcm.jg.restaurante.caseiro.service.PedidoService;
+import br.com.joaogcm.jg.restaurante.caseiro.util.ValidacaoUtil;
 
 @WebServlet(name = "PedidoLanche", urlPatterns = { "/PedidoLanche" })
 public class PedidoLancheServlet extends HttpServlet {
@@ -55,7 +55,7 @@ public class PedidoLancheServlet extends HttpServlet {
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação do pedido e/ou lanche: " + e.getMessage());
 
-			redirecionarParaPagina(request, response, "/error.jsp",
+			new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaError(),
 					"Erro ao processar a solicitação do pedido e/ou lanche!", "erro");
 		}
 	}
@@ -75,34 +75,8 @@ public class PedidoLancheServlet extends HttpServlet {
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação do pedido e/ou lanche: " + e.getMessage());
 
-			redirecionarParaPagina(request, response, "/error.jsp",
+			new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaError(),
 					"Erro ao processar a solicitação do pedido e/ou lanche!", "erro");
 		}
-	}
-
-	/**
-	 * Redireciona para determinadas páginas incluindo mensagem e o tipo da
-	 * mensagem.
-	 * 
-	 * @param request
-	 * @param response
-	 * @param pagina
-	 * @param mensagem
-	 * @param tipoMensagem
-	 * @throws ServletException
-	 * @throws IOException
-	 */
-	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina,
-			String mensagem, String tipoMensagem) throws ServletException, IOException {
-		if (mensagem != null) {
-			request.setAttribute("mensagem", mensagem);
-		}
-
-		if (tipoMensagem != null) {
-			request.setAttribute("tipoMensagem", tipoMensagem);
-		}
-
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher(pagina);
-		requestDispatcher.forward(request, response);
 	}
 }

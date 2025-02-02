@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
 import br.com.joaogcm.jg.restaurante.caseiro.service.MenuService;
+import br.com.joaogcm.jg.restaurante.caseiro.util.ValidacaoUtil;
 
 @WebServlet(name = "Home", urlPatterns = { "/Home" })
 public class HomeServlet extends HttpServlet {
@@ -31,7 +31,7 @@ public class HomeServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String acao = request.getParameter("acao");
+		String acao = new ValidacaoUtil().getParametroString(request, "acao");
 
 		/* Usado para deixar o item do submenu selecionado quando clicado */
 		request.setAttribute("acao", acao);
@@ -42,61 +42,36 @@ public class HomeServlet extends HttpServlet {
 			Set<Menu> menus = menuService.listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
-			if (acao.equalsIgnoreCase("home")) {
+			if (acao.equalsIgnoreCase(ValidacaoUtil.getAcaoHome())) {
 				HttpSession sessaoCliente = request.getSession(false);
 				Cliente cliente = (Cliente) sessaoCliente.getAttribute("clienteComCadastro");
 
 				if (sessaoCliente != null && cliente != null) {
-					redirecionarParaPagina(request, response, "/index.jsp",
+					new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaHome(),
 							"Olá " + cliente.getNome() + ", seja bem-vindo ao JG Restaurante :)", "sucesso");
 				} else {
-					redirecionarParaPagina(request, response, "/index.jsp", "Seja bem-vindo ao JG Restaurante :)",
-							"sucesso");
+					new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaHome(),
+							"Seja bem-vindo ao JG Restaurante :)", "sucesso");
 				}
 			}
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação da home: " + e.getMessage());
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação da home!", "erro");
+			new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaError(),
+					"Erro ao processar a solicitação da home!", "erro");
 		}
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-
 			Set<Menu> menus = new MenuService().listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação da home!", "erro");
+			new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaError(),
+					"Erro ao processar a solicitação da home!", "erro");
 		}
-	}
-
-	/**
-	 * Redireciona para determinadas páginas incluindo mensagem e o tipo da
-	 * mensagem.
-	 * 
-	 * @param request
-	 * @param response
-	 * @param pagina
-	 * @param mensagem
-	 * @param tipoMensagem
-	 * @throws ServletException
-	 * @throws IOException
-	 */
-	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina,
-			String mensagem, String tipoMensagem) throws ServletException, IOException {
-		if (mensagem != null) {
-			request.setAttribute("mensagem", mensagem);
-		}
-
-		if (tipoMensagem != null) {
-			request.setAttribute("tipoMensagem", tipoMensagem);
-		}
-
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher(pagina);
-		requestDispatcher.forward(request, response);
 	}
 }

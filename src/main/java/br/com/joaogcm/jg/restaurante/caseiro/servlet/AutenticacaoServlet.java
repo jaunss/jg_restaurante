@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,6 +16,7 @@ import br.com.joaogcm.jg.restaurante.caseiro.model.Cliente;
 import br.com.joaogcm.jg.restaurante.caseiro.model.Menu;
 import br.com.joaogcm.jg.restaurante.caseiro.service.AutenticacaoService;
 import br.com.joaogcm.jg.restaurante.caseiro.service.MenuService;
+import br.com.joaogcm.jg.restaurante.caseiro.util.ValidacaoUtil;
 
 @WebServlet(name = "Autenticacao", urlPatterns = { "/Autenticacao" })
 public class AutenticacaoServlet extends HttpServlet {
@@ -36,7 +36,7 @@ public class AutenticacaoServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String acao = request.getParameter("acao");
+		String acao = new ValidacaoUtil().getParametroString(request, "acao");
 
 		/* Usado para deixar o item do submenu selecionado quando clicado */
 		request.setAttribute("acao", acao);
@@ -53,25 +53,26 @@ public class AutenticacaoServlet extends HttpServlet {
 			Set<Menu> menus = menuService.listarTodasUrlsSubMenu();
 			request.setAttribute("menus", menus);
 
-			if (acao.equalsIgnoreCase("autenticarCliente")) {
-				redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
-						"Insira os dados para autenticar!", "perigo");
-			} else if (acao.equalsIgnoreCase("deslogarCliente")) {
+			if (acao.equalsIgnoreCase(ValidacaoUtil.getAcaoAutenticarCliente())) {
+				new ValidacaoUtil().redirecionarParaAPagina(request, response,
+						ValidacaoUtil.getPaginaAutenticarCliente(), "Insira os dados para autenticar!", "perigo");
+			} else if (acao.equalsIgnoreCase(ValidacaoUtil.getAcaoDeslogarCliente())) {
 				if (sessaoCliente != null && cliente != null) {
 					sessaoCliente.invalidate();
 
-					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
-							"Já vai? :( Um até logo e retorne novamente :)", "perigo");
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaAutenticarCliente(), "Já vai? :( Um até logo e retorne novamente :)",
+							"perigo");
 				} else {
-					redirecionarParaPagina(request, response, "/error.jsp",
+					new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaError(),
 							"Erro ao processar a solicitação de encerramento da sessão do cliente!", "erro");
 				}
 			}
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação de autenticação: " + e.getMessage());
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação de autenticação!",
-					"erro");
+			new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaError(),
+					"Erro ao processar a solicitação de autenticação!", "erro");
 		}
 	}
 
@@ -99,47 +100,22 @@ public class AutenticacaoServlet extends HttpServlet {
 					sessaoUsuario.setAttribute("clienteComCadastro", clienteComCadastro);
 					sessaoUsuario.setMaxInactiveInterval(1800);
 
-					redirecionarParaPagina(request, response, "/index.jsp",
+					new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaHome(),
 							"Olá " + clienteComCadastro.getNome() + ", seja bem-vindo ao JG Restaurante :)", "sucesso");
 				} else {
-					redirecionarParaPagina(request, response, "/paginas/autenticacao/autenticar-login.jsp",
-							"Email e/ou Senha incorretos!", "perigo");
+					new ValidacaoUtil().redirecionarParaAPagina(request, response,
+							ValidacaoUtil.getPaginaAutenticarCliente(), "Email e/ou Senha incorretos!", "perigo");
 				}
 			} else {
-				redirecionarParaPagina(request, response, "/paginas/cliente/cadastrar-cliente.jsp",
-						"Você ainda não tem um cadastro, faça um!", "perigo");
+				new ValidacaoUtil().redirecionarParaAPagina(request, response,
+						ValidacaoUtil.getPaginaCadastrarCliente(), "Você ainda não tem um cadastro, faça um!",
+						"perigo");
 			}
 		} catch (Exception e) {
 			logger.severe("Erro ao processar a solicitação de autenticação: " + e.getMessage());
 
-			redirecionarParaPagina(request, response, "/error.jsp", "Erro ao processar a solicitação de autenticação!",
-					"erro");
+			new ValidacaoUtil().redirecionarParaAPagina(request, response, ValidacaoUtil.getPaginaError(),
+					"Erro ao processar a solicitação de autenticação!", "erro");
 		}
-	}
-
-	/**
-	 * Redireciona para determinadas páginas incluindo mensagem e o tipo da
-	 * mensagem.
-	 * 
-	 * @param request
-	 * @param response
-	 * @param pagina
-	 * @param mensagem
-	 * @param tipoMensagem
-	 * @throws ServletException
-	 * @throws IOException
-	 */
-	private void redirecionarParaPagina(HttpServletRequest request, HttpServletResponse response, String pagina,
-			String mensagem, String tipoMensagem) throws ServletException, IOException {
-		if (mensagem != null) {
-			request.setAttribute("mensagem", mensagem);
-		}
-
-		if (tipoMensagem != null) {
-			request.setAttribute("tipoMensagem", tipoMensagem);
-		}
-
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher(pagina);
-		requestDispatcher.forward(request, response);
 	}
 }

@@ -9,7 +9,7 @@ public class Cliente {
 	private String cpf;
 	private String senha;
 	private Perfil perfil;
-	private Endereco endereco;
+	private Cidade cidade;
 
 	public Cliente() {
 
@@ -71,11 +71,11 @@ public class Cliente {
 		this.perfil = perfil;
 	}
 
-	public Endereco getEndereco() {
-		return endereco;
+	public Cidade getCidade() {
+		return cidade;
 	}
 
-	public void setEndereco(Endereco endereco) {
-		this.endereco = endereco;
+	public void setCidade(Cidade cidade) {
+		this.cidade = cidade;
 	}
 }
