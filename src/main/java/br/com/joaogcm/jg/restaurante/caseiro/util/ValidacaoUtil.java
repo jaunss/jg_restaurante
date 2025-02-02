@@ -167,6 +167,13 @@ public class ValidacaoUtil {
 		return valor != null && !valor.isEmpty() ? LocalDateTime.parse(valor) : null;
 	}
 
+	/**
+	 * Valida o parâmetro do tipo String[].
+	 * 
+	 * @param request
+	 * @param parametro
+	 * @return
+	 */
 	public String[] getParametroArrayString(HttpServletRequest request, String parametro) {
 		String[] valor = request.getParameterValues(parametro);
 		return valor != null ? valor : null;
